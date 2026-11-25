@@ -4,6 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Písmenkové hrátky</title>
+<link rel="icon" type="image/png" href="favicon-64.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#40aaff">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Hrátky">
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@500;700;800&display=swap&subset=latin-ext" rel="stylesheet">
 <style>
 /* VOICE: veselá, laskavá, ovládání obrázky a hlasem pro děti, které ještě nečtou
@@ -169,14 +176,53 @@ select,input[type=number],input[type=text]{font-size:16px;padding:8px 10px;borde
 @keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
 @keyframes pop{50%{transform:scale(1.18) rotate(-4deg)}}
 @keyframes fly{to{transform:translate(var(--x),var(--y2)) rotate(var(--rot));opacity:0}}
-@media(min-width:700px){.wrap{max-width:1100px}.pic{font-size:clamp(150px,22vw,230px)}.tile.xl{min-width:120px;height:120px;font-size:70px}.tile{min-width:84px;height:84px;font-size:50px}
+@media(min-width:700px){.wrap{max-width:1100px}.pic{font-size:clamp(120px,min(20vw,24vh),210px)}.tile.xl{min-width:120px;height:120px;font-size:70px}.tile{min-width:84px;height:84px;font-size:50px}
 .opt{width:170px;height:170px;font-size:110px}.gt{min-height:190px}.gi{font-size:58px;min-height:100px;flex-wrap:nowrap;gap:4px}.gl{font-size:18px}.mt{min-width:44px;height:52px;font-size:32px}
 .slot{width:84px;height:96px;font-size:56px}.syl{font-size:110px}.syl.s{font-size:64px}.ex{font-size:100px}.word{font-size:96px}.round{width:64px;height:64px}.ib{width:76px;height:76px;font-size:36px}}
+@media(max-width:600px){.mascot{width:56px;opacity:.9}}
 @media(max-width:420px){.games,.who{grid-template-columns:1fr 1fr}.gt{min-height:130px}.gi{font-size:44px}}
+.sky{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.wrap{position:relative;z-index:1}
+html{background:light-dark(#d9f2ff,#141a2e)}
+body{background:linear-gradient(light-dark(#8fd3ff,#0d1630),light-dark(#d4efff,#1a2446) 45%,light-dark(#fff7d6,#1e2742) 85%) fixed!important;min-height:100vh}
+.sun{position:absolute;right:6vw;top:4vh;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,light-dark(#fff2b0,#f3f1ea) 0 38%,light-dark(#ffc93c,#c9cfe6) 52%,transparent 70%);animation:glow 6s ease-in-out infinite}
+@keyframes glow{50%{transform:scale(1.08)}}
+.cl{position:absolute;left:-260px;width:170px;height:52px;border-radius:52px;background:light-dark(#fff,#2b3760);opacity:.92;animation:drift linear infinite}
+.cl::before,.cl::after{content:"";position:absolute;background:inherit;border-radius:50%}
+.cl::before{width:72px;height:72px;left:24px;top:-36px}.cl::after{width:92px;height:92px;left:64px;top:-52px}
+.c1{top:14vh;animation-duration:75s}.c2{top:30vh;animation-duration:100s;animation-delay:-45s;scale:.7}.c3{top:7vh;animation-duration:130s;animation-delay:-85s;scale:1.15}
+@keyframes drift{to{left:110vw}}
+.hills{position:absolute;left:0;bottom:0;width:100%;height:22vh}.hills .h1{fill:light-dark(#b5e6a0,#1f3d2a)}.hills .h2{fill:light-dark(#86cf6c,#183223)}
+#floaters span{position:absolute;bottom:-90px;font:800 44px "Baloo 2",sans-serif;opacity:.22;animation:rise linear infinite}
+@keyframes rise{to{transform:translateY(-125vh) rotate(30deg)}}
+.stage{box-shadow:0 14px 34px rgba(30,70,140,.14)}
+.gt,.kid,.world,.bdg{animation:popin .45s cubic-bezier(.2,1.4,.5,1) both;animation-delay:calc(var(--i,0)*55ms)}
+@keyframes popin{from{transform:scale(.6) translateY(24px);opacity:0}}
+.gt{transition:transform .15s}.gt:hover{transform:translateY(-4px)}
+.hero{display:flex;align-items:center;justify-content:center;gap:10px;margin:6px 0 10px}
+.hero .owl{width:clamp(90px,18vw,140px);animation:hop 2.6s ease-in-out infinite}
+@keyframes hop{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.bubble{background:var(--board);border-radius:22px;padding:8px 16px;font:800 clamp(22px,5vw,34px)/1.1 "Baloo 2",sans-serif;position:relative;box-shadow:0 6px 0 var(--line)}
+.bubble::before{content:"";position:absolute;left:-14px;top:40%;border:10px solid transparent;border-right:16px solid var(--board)}
+.owl .eye{transform-origin:center;transform-box:fill-box;animation:blink 5s infinite}
+@keyframes blink{0%,93%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+.mascot{position:fixed;right:12px;bottom:10px;width:clamp(64px,10vw,96px);pointer-events:none;z-index:3}
+.mascot .owl{width:100%}
+.mascot.cheer{animation:jump .8s}.mascot.cheer .wl,.mascot.cheer .wr{animation:flap .2s 4}
+.owl .wl{transform-origin:30px 72px}.owl .wr{transform-origin:90px 72px}
+.mascot.hmm{animation:wobble .5s}
+@keyframes jump{30%{transform:translateY(-34px) rotate(-6deg)}60%{transform:translateY(0)}80%{transform:translateY(-10px)}}
+@keyframes flap{50%{transform:rotate(-25deg)}}
+@keyframes wobble{25%{transform:rotate(-12deg)}75%{transform:rotate(12deg)}}
+.oops{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);z-index:30;background:var(--board);border:3px solid var(--r);border-radius:20px;padding:10px 16px;display:flex;gap:12px;align-items:center;box-shadow:0 10px 30px rgba(0,0,0,.25);flex-wrap:wrap;justify-content:center}
+.sheet{position:relative}.xbtn{position:absolute;top:10px;right:10px;width:48px;height:48px;border-radius:50%;background:var(--pale);font-size:22px;z-index:2}
+.world{background:linear-gradient(180deg,var(--board),light-dark(#f4f9ff,#222c4c))}
+@media(prefers-reduced-motion:reduce){.cl,#floaters span,.gt,.kid,.world,.bdg,.sun,.hero .owl,.owl .eye,.mascot{animation:none!important}}
 @media(prefers-reduced-motion:reduce){.pop,.no,.fx{animation:none}.fx{display:none}}
 </style>
 </head>
 <body>
+<div class="sky" aria-hidden="true"><div class="sun"></div><i class="cl c1"></i><i class="cl c2"></i><i class="cl c3"></i><div id="floaters"></div><svg class="hills" viewBox="0 0 1200 200" preserveAspectRatio="none"><path class="h1" d="M0 110 Q300 10 620 100 T1200 80 V200 H0Z"/><path class="h2" d="M0 160 Q260 80 540 150 T1200 130 V200 H0Z"/></svg></div>
 <div class="wrap" id="app"></div>
 
 <div class="ov" id="gate"><div class="sheet" style="max-width:380px">
@@ -247,6 +293,9 @@ const BADGES=[
  {id:'b10',i:'🏡',n:'Sběratel',d:'Měj deset věcí nebo zvířátek.',t:p=>Object.keys(p.st.own||{}).length>=10},
  {id:'bbig',i:'💰',n:'Šetřílek',d:'Našetři si a kup věc aspoň za čtyřicet mincí.',t:p=>VIT.some(x=>x.c>=40&&(p.st.own||{})[x.id])},
  {id:'all',i:'🎪',n:'Vyzkoušel jsem všechno',d:'Zahraj si každou hru.',t:p=>GAMES.every(g=>(p.st.g[g.id]||{}).ok)}];
+const OWL='<svg class="owl" viewBox="0 0 120 124" aria-hidden="true"><path d="M24 42 L32 16 L48 34Z M96 42 L88 16 L72 34Z" fill="#7a4b2e"/><ellipse cx="60" cy="74" rx="42" ry="44" fill="#8a5a3c"/><ellipse cx="60" cy="86" rx="27" ry="29" fill="#f6dcb4"/><path d="M44 80 q6 5 12 0 M64 92 q6 5 12 0 M50 100 q6 5 12 0" stroke="#e0b98a" stroke-width="3" fill="none" stroke-linecap="round"/><path class="wl" d="M22 66 Q6 92 30 110 Q36 88 32 70Z" fill="#6b3f24"/><path class="wr" d="M98 66 Q114 92 90 110 Q84 88 88 70Z" fill="#6b3f24"/><circle cx="43" cy="54" r="18" fill="#fff"/><circle cx="77" cy="54" r="18" fill="#fff"/><circle class="eye" cx="45" cy="56" r="8.5" fill="#1d2340"/><circle class="eye" cx="75" cy="56" r="8.5" fill="#1d2340"/><circle cx="48" cy="52" r="2.8" fill="#fff"/><circle cx="78" cy="52" r="2.8" fill="#fff"/><path d="M54 66 L66 66 L60 77Z" fill="#ffb020"/><circle cx="30" cy="68" r="5" fill="#ff9aa8" opacity=".6"/><circle cx="90" cy="68" r="5" fill="#ff9aa8" opacity=".6"/><path d="M45 116 l-5 6 M51 117 l0 6 M69 117 l0 6 M75 116 l5 6" stroke="#ffb020" stroke-width="4" stroke-linecap="round"/><path d="M36 22 L60 12 L84 22 L60 32Z" fill="#2b59c3"/><path d="M84 22 v12" stroke="#ffc93c" stroke-width="3"/><circle cx="84" cy="36" r="3.5" fill="#ffc93c"/></svg>';
+(()=>{const f=document.getElementById('floaters');if(!f)return;const G='AEIOUMLPS12345★';const C=['#e8433a','#2b59c3','#e08a00','#25a36b','#8a4fd0'];let h='';for(let i=0;i<14;i++){const d=18+Math.random()*20;h+='<span style="left:'+(Math.random()*96).toFixed(1)+'%;font-size:'+(30+Math.random()*40|0)+'px;color:'+C[i%5]+';animation-duration:'+d.toFixed(1)+'s;animation-delay:-'+(Math.random()*d).toFixed(1)+'s">'+G[Math.random()*G.length|0]+'</span>'}f.innerHTML=h})();
+function masc(k){const m=$('masc');if(!m)return;m.classList.remove('cheer','hmm');void m.offsetWidth;m.classList.add(k)}
 const SPK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.8 6a9 9 0 0 1 0 12"/></svg>';
 const HOME='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M3 11 12 3l9 8M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/></svg>';
 const BACK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4 7 12l8 8"/></svg>';
@@ -359,7 +408,7 @@ function rec(game,ok,item){const p=P();if(!p)return;const g=p.st.g[game]||(p.st.
 let R={n:0,streak:0,err:0};
 function hit(k){const p=P();if(!p)return;const h=p.st.hit;h[k]=(h[k]||0)+1;
   if(h[k]===5){const t=k.slice(2);const isL=k[0]==='L';pop('<div class="av pop"><span class="mt big '+col(t)+'" style="font-size:80px;height:110px;min-width:100px">'+(isL?disp(t):t)+'</span></div><h2>'+(isL?'Písmenko':'Číslo')+' do sbírky!</h2>',[(isL?'Písmenko ':'Číslo ')+(isL?pn(t):numW(+t))+' je tvoje!'])}}
-function win(game){tone(true);const p=P();rec(game,true);const L0=lvOf(p.st.stars);const clean=!R.err;R.err=0;
+function win(game){tone(true);masc('cheer');const p=P();rec(game,true);const L0=lvOf(p.st.stars);const clean=!R.err;R.err=0;
   const t=today();if(p.st.day!==t){p.st.day=t;p.st.today=0}
   if(!p.st.days.includes(t)){p.st.days.push(t);if(p.st.days.length>400)p.st.days.shift()}
   R.n++;R.streak=clean?R.streak+1:0;p.st.best=Math.max(p.st.best,R.streak);
@@ -376,17 +425,24 @@ function checkBadges(){const p=P();const nw=BADGES.filter(b=>!p.st.badges[b.id]&
   nw.forEach(b=>p.st.badges[b.id]=today());const show=nw.filter(b=>!b.id.startsWith('lv'));if(!show.length)return;
   if(show.length>3)return pop('<div class="av pop">🏅</div><h2>'+show.length+' nových odznaků!</h2><p style="font-size:44px">'+show.map(b=>b.i).join(' ')+'</p>',['Hurá! Máš '+numW(show.length)+' nových odznaků.']);
   show.forEach(b=>pop('<div class="av pop">'+b.i+'</div><h2>Nový odznak!</h2><p style="font:800 26px \'Baloo 2\'">'+esc(b.n)+'</p>',['Nový odznak!',b.n]))}
-function miss(game,item,el){tone(false);R.err=1;R.streak=0;rec(game,false,item);save();if(el){el.classList.remove('no');void el.offsetWidth;el.classList.add('no')}}
+function miss(game,item,el){tone(false);masc('hmm');R.err=1;R.streak=0;rec(game,false,item);save();if(el){el.classList.remove('no');void el.offsetWidth;el.classList.add('no')}}
 const PQ=[];let pqT=0;
-function pop(html,speech,bind,now){PQ.push([html,speech,bind]);if(PQ.length===1){clearTimeout(pqT);pqT=setTimeout(()=>whenQuiet(showPop),now?10:600)}}
-function showPop(){if(!PQ.length)return;clearTimeout(timer);const [h,s,bind]=PQ[0];$('lvlIn').innerHTML=h+(bind?'':'<button class="ib g" id="lvOk" aria-label="Pokračovat" style="margin-top:10px">✔</button>');$('lvl').classList.add('show');say(s);
-  const close=()=>{PQ.shift();$('lvl').classList.remove('show');if(PQ.length)setTimeout(()=>whenQuiet(showPop),250);else if(view!=='game')render()};
-  if(bind)return bind(close);
-  $('lvOk').onclick=()=>{PQ.shift();$('lvl').classList.remove('show');if(PQ.length)setTimeout(()=>whenQuiet(showPop),250);else if(view==='game'&&stage()&&stage().querySelector('.ib.g[aria-label="Další"]'))timer=setTimeout(()=>{const b=stage().querySelector('.ib.g[aria-label="Další"]');b&&b.click()},1500)}}
+function pop(html,speech,bind,now,onX){PQ.push([html,speech,bind,now,onX]);if(PQ.length===1){clearTimeout(pqT);pqT=setTimeout(()=>whenQuiet(showPop),now?10:600)}}
+let popClose=null;
+function showPop(){if(!PQ.length)return;clearTimeout(timer);const [h,sp_,bind,,onX]=PQ[0];
+  $('lvlIn').innerHTML='<button class="xbtn" id="lvX" aria-label="Zavřít">✖</button>'+h+(bind?'':'<button class="ib g" id="lvOk" aria-label="Pokračovat" style="margin-top:10px">✔</button>');$('lvl').classList.add('show');say(sp_);
+  const fin=()=>{if(!popClose)return;popClose=null;PQ.shift();$('lvl').classList.remove('show');
+    if(PQ.length)setTimeout(()=>whenQuiet(showPop),250);
+    else if(view==='game'){const nb=stage()&&stage().querySelector('.ib.g[aria-label="Další"]');if(nb)timer=setTimeout(()=>{const x=stage()&&stage().querySelector('.ib.g[aria-label="Další"]');x&&x.click()},1500)}
+    else render()};
+  popClose=()=>{try{onX&&onX()}catch(e){}fin()};
+  $('lvX').onclick=popClose;
+  if(bind)return bind(fin);
+  $('lvOk').onclick=fin}
 function pickReward(title,speech){const p=P();const free=STK.filter(x=>!p.st.stickers[x]);if(!free.length){p.st.coins+=3;return pop('<div class="av pop">🪙</div><h2>'+title+'</h2><p>Máš všechny samolepky! +3 🪙</p>',speech)}
   const o=shuf(free).slice(0,3);
   pop('<h2>'+title+'</h2><p style="font:800 20px \'Baloo 2\'">Vyber si samolepku:</p><div class="row" id="pk">'+o.map(x=>'<button class="opt" data-s="'+x+'">'+x+'</button>').join('')+'</div>',speech.concat(['Vyber si samolepku.']),close=>{
-    $('pk').onclick=e=>{const b=e.target.closest('[data-s]');if(!b)return;const pp=P();pp.st.stickers[b.dataset.s]=today();save();fanfare();b.classList.add('pop');say('Tahle je tvoje!');setTimeout(close,1100)}})}
+    $('pk').onclick=e=>{const b=e.target.closest('[data-s]');if(!b)return;const pp=P();pp.st.stickers[b.dataset.s]=today();save();fanfare();b.classList.add('pop');say('Tahle je tvoje!');setTimeout(close,1100)}},false,()=>{const pp=P();if(pp&&!o.some(x=>pp.st.stickers[x])){pp.st.stickers[o[0]]=today();save()}})}
 function confirmBuy(it,onYes){pop('<div class="av pop">'+it.e+'</div><h2>'+esc(it.n)+'</h2><p style="font:800 26px \'Baloo 2\'">🪙 '+it.c+'</p><div class="tools"><button class="ib" id="cNo" aria-label="Ne" style="background:var(--r);color:#fff">✖</button><button class="ib g" id="cYes" aria-label="Ano">✔</button></div>',[it.n+'.','Stojí '+numW(it.c)+' mincí. Chceš to?'],close=>{$('cNo').onclick=close;$('cYes').onclick=()=>{onYes();close()}},true)}
 function fanfare(){try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();[523,659,784,1047].forEach((f,i)=>{const o=ac.createOscillator(),g=ac.createGain(),t=ac.currentTime+.1*i;o.type='triangle';o.connect(g);g.connect(ac.destination);o.frequency.value=f;g.gain.setValueAtTime(.13,t);g.gain.exponentialRampToValueAtTime(.001,t+.35);o.start(t);o.stop(t+.36)})}catch(e){}}
 function burst(){const st=$('stage');if(!st)return;const r=st.getBoundingClientRect();
@@ -588,8 +644,8 @@ function goalHTML(){const gI=P().st.goalItem&&VIT.find(x=>x.id===P().st.goalItem
   return '<div class="grow"><button class="goal'+(done?' done':'')+'" id="goal" aria-label="Dnešní cíl">'+inner+'</button><button class="coin" id="shop" aria-label="Obchod"><span>'+(gI?gI.e:'🛍️')+'</span><b>🪙 '+p.st.coins+(gI?' / '+gI.c:'')+'</b>'+(S().realRw&&p.st.pend.length?'<i>'+p.st.pend.length+'</i>':'')+'</button></div>'}
 function render(){hush();clearTimeout(timer);const app=$('app');
   if(!ST.profiles.length||!P())view=view==='who'?'who':'who';
-  if(view==='who'){app.innerHTML='<div class="bar"><span style="flex:1"></span><button class="round" id="pb" aria-label="Pro rodiče">'+LOCK+'</button></div><h1>Kdo si bude <span>hrát?</span></h1>'
-    +'<div class="who">'+ST.profiles.map(p=>{const L=lvOf(p.st.stars);return '<button class="kid" data-id="'+esc(p.id)+'"><span class="av">'+esc(p.av)+'</span><b>'+esc(p.name)+'</b><small>'+lvAn(L)+' úroveň '+L+' · ⭐ '+p.st.stars+'</small></button>'}).join('')
+  if(view==='who'){app.innerHTML='<div class="bar"><span style="flex:1"></span><button class="round" id="pb" aria-label="Pro rodiče">'+LOCK+'</button></div><div class="hero">'+OWL+'<div class="bubble">Kdo si bude <span style="color:var(--r)">hrát?</span></div></div>'
+    +'<div class="who">'+ST.profiles.map((p,i)=>{const L=lvOf(p.st.stars);return '<button class="kid" style="--i:'+i+'" data-id="'+esc(p.id)+'"><span class="av">'+esc(p.av)+'</span><b>'+esc(p.name)+'</b><small>'+lvAn(L)+' úroveň '+L+' · ⭐ '+p.st.stars+'</small></button>'}).join('')
     +'<button class="kid" id="addK" style="border-style:dashed"><span class="av" style="opacity:.5">➕</span><small>Přidat dítě<br>(rodiče)</small></button></div>'
     +'<p class="note" style="text-align:center;margin-top:20px">Každé dítě má svůj profil, svá písmenka, úrovně a sbírku odznaků.</p>';
     app.querySelector('.who').onclick=e=>{const b=e.target.closest('.kid');if(!b)return;if(b.id==='addK')return openGate('add');ST.cur=b.dataset.id;save();view='home';render();say('Ahoj, '+P().name+'!')};
@@ -597,12 +653,13 @@ function render(){hush();clearTimeout(timer);const app=$('app');
   if(view==='home'){app.innerHTML='<div class="bar"><button class="round" id="sw" aria-label="Změnit hráče">👥</button><div id="meBar" style="flex:1;display:flex">'+barHTML()+'</div><button class="round" id="al" aria-label="Sbírka odznaků">🏆</button><button class="round" id="pb" aria-label="Pro rodiče">'+LOCK+'</button></div>'
     +goalHTML()
     +'<div class="worlds"><button class="world L" data-w="L" aria-pressed="'+(world==='L')+'" aria-label="Písmenka">'+mt(disp('A'),'c0')+mt(disp('B'),'c2')+mt(disp('C'),'c3')+'</button><button class="world N" data-w="N" aria-pressed="'+(world==='N')+'" aria-label="Čísla">'+mt('1','c1')+mt('2','c4')+mt('3','c3')+'</button></div>'
-    +'<div class="games">'+GAMES.filter(g=>g.w===world).map(g=>{const st=P().st.g[g.id];return '<button class="gt" data-g="'+g.id+'"><span class="gi">'+g.icon()+'</span><span class="gl">'+g.label+'</span>'+(st?'<span class="gs">⭐ '+st.ok+'</span>':'')+'</button>'}).join('')+'</div>';
+    +'<div class="games">'+GAMES.filter(g=>g.w===world).map((g,i)=>{const st=P().st.g[g.id];return '<button class="gt" style="--i:'+i+'" data-g="'+g.id+'"><span class="gi">'+g.icon()+'</span><span class="gl">'+g.label+'</span>'+(st?'<span class="gs">⭐ '+st.ok+'</span>':'')+'</button>'}).join('')+'</div>';
     $('sw').onclick=()=>{view='who';render()};$('pb').onclick=()=>openGate();$('al').onclick=()=>{view='album';render();say('Moje sbírka')};
     $('goal').onclick=()=>{const p=P(),t=today(),n=p.st.day===t?p.st.today:0,g=+S().goal||15,c=p.st.chal.day===t?p.st.chal:{n:0},ct=+S().chal||10;
       say(p.st.goalDay!==t?['Dnešní cíl je '+numW(g)+' hvězdiček.','Zatím máš '+numW(n)+'.']:c.done?['Dnešní cíl i výzva jsou splněné. Jsi skvělý hráč!']:['Dnešní cíl je splněný!','Výzva navíc: splň ještě '+numW(ct-c.n)+' úkolů a vyber si samolepku.'])};
     $('shop').onclick=()=>{view='shop';render();say(['Obchod s odměnami.','Máš '+numW(Math.min(P().st.coins,20))+' mincí.'])};
     app.querySelector('.worlds').onclick=e=>{const b=e.target.closest('.world');if(!b)return;world=b.dataset.w;render();say(world==='L'?'Písmenka':'Čísla')};
+    app.insertAdjacentHTML('beforeend','<div class="mascot" id="masc">'+OWL+'</div>');
     app.querySelector('.games').onclick=e=>{const b=e.target.closest('.gt');if(b)openGame(b.dataset.g)};return}
   if(view==='shop'){const p=P(),st=p.st,real=!!S().realRw,rw=real?(S().rewards||[]):[];
     const cats=VCAT.concat(real?[['real','🎁','Skutečné odměny']]:[]).concat([['stk','🌟','Samolepky']]);if(!cats.find(c=>c[0]===shopCat))shopCat='zvir';
@@ -648,7 +705,7 @@ function render(){hush();clearTimeout(timer);const app=$('app');
     $('bd').onclick=e=>{const x=e.target.closest('[data-b]');if(!x)return;const bd=BADGES.find(y=>y.id===x.dataset.b);say(st.badges[bd.id]?[bd.n,'Tenhle odznak už máš!']:['Tenhle odznak ještě nemáš.',bd.d])};
     $('bl').onclick=e=>{const x=e.target.closest('[data-l]');if(!x)return;const l=x.dataset.l,n=st.hit['L:'+l]||0;say(n>=5?[ln(l,true),'Tohle písmenko umíš!']:[ln(l,true),'Poznej ho ještě '+KR[5-n]+'.'])};
     $('bn').onclick=e=>{const x=e.target.closest('[data-n]');if(!x)return;const v=+x.dataset.n,n=st.hit['N:'+v]||0;say(n>=5?[numS(v),'Tohle číslo umíš!']:[numS(v),'Poznej ho ještě '+KR[5-n]+'.'])};return}
-  if(view==='game'){const g=G(cur);app.innerHTML='<div class="bar"><button class="round" id="bk" aria-label="Zpět">'+BACK+'</button><span class="gi" style="font-size:30px;min-height:0;flex:none">'+g.icon()+'</span><div class="dots" id="dots"></div><button class="round" id="ask" aria-label="Zadání" style="background:var(--y);border-color:#c79413">'+SPK+'</button></div><main class="stage" id="stage" aria-live="polite"></main>';
+  if(view==='game'){const g=G(cur);app.innerHTML='<div class="bar"><button class="round" id="bk" aria-label="Zpět">'+BACK+'</button><span class="gi" style="font-size:30px;min-height:0;flex:none">'+g.icon()+'</span><div class="dots" id="dots"></div><button class="round" id="ask" aria-label="Zadání" style="background:var(--y);border-color:#c79413">'+SPK+'</button></div><main class="stage" id="stage" aria-live="polite"></main><div class="mascot" id="masc">'+OWL+'</div>';
     $('bk').onclick=()=>{cur=null;view='home';render()};$('ask').onclick=()=>say(g.ask);dots();FN[cur]()}}
 function dots(){const d=$('dots');if(d)d.innerHTML=Array.from({length:5},(_,i)=>'<i class="'+(i<R.n%5||(R.n&&R.n%5===0)?'on':'')+'"></i>').join('')}
 function openGame(id){cur=id;R={n:0,streak:0,err:0};view='game';render();say(G(id).ask)}
@@ -685,7 +742,7 @@ function vItems(){if(vsec==='L')return ALPHA.map(g=>({k:'L:'+g,lab:g,def:NAME[g]
 let tab='dite',delAsk=false,wipeAsk=false;
 function openSet(t){if(t)tab=t;if(!P()&&ST.profiles.length)ST.cur=ST.profiles[0].id;delAsk=false;drawSet();$('set').classList.add('show')}
 function drawSet(){const el=$('setIn');const p=P();
-  let h='<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h2>Nastavení pro rodiče</h2><button class="btn main" id="close">Hotovo</button></div>';
+  let h='<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding-right:4px"><h2>Nastavení pro rodiče</h2><button class="btn main" id="close">Hotovo ✔</button></div>';
   h+='<div class="ptabs" id="kids">'+ST.profiles.map(x=>'<button data-id="'+esc(x.id)+'" aria-pressed="'+(p&&x.id===p.id)+'">'+esc(x.av)+' '+esc(x.name)+'</button>').join('')+'<button id="addP">+ přidat dítě</button></div>';
   if(!p){el.innerHTML=h+'<p>Zatím tu není žádné dítě. Přidejte profil tlačítkem „+ přidat dítě“.</p>';bindSet();return}
   const s=S();
@@ -789,6 +846,19 @@ function bindSet(){const p=P();const set=(k,v)=>{p.set[k]=v;save();drawSet()};co
     q('oRate').oninput=e=>{p.set.rate=+e.target.value;save()};q('oRate').onchange=()=>say('Takhle rychle budu mluvit.')}
   if(tab==='vys')q('rst').onclick=()=>{p.st={};fixP(p);save();drawSet()}}
 
+/* navigace: systémové Zpět (Android), Esc, nouzový návrat */
+function goBack(){
+  if($('lvl').classList.contains('show')){if(popClose)popClose();else $('lvl').classList.remove('show');return true}
+  if($('gate').classList.contains('show')){$('gate').classList.remove('show');return true}
+  if($('set').classList.contains('show')){const c=$('close');if(c)c.click();else{$('set').classList.remove('show');render()}return true}
+  if(view==='game'||view==='album'||view==='shop'){cur=null;view='home';render();return true}
+  if(view==='home'){view='who';render();return true}
+  return false}
+try{history.pushState({g:1},'')}catch(e){}
+window.addEventListener('popstate',()=>{let h=false;try{h=goBack()}catch(e){toMenu()}if(h){try{history.pushState({g:1},'')}catch(e){}}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){try{goBack()}catch(x){toMenu()}}});
+function toMenu(){const o=$('oops');if(o)o.remove();['lvl','gate','set'].forEach(i=>$(i).classList.remove('show'));PQ.length=0;popClose=null;cur=null;view=P()?'home':'who';try{render()}catch(x){location.reload()}}
+window.addEventListener('error',e=>{if(!e.error||$('oops'))return;const t=document.createElement('div');t.id='oops';t.className='oops';t.innerHTML='<span style="font-size:30px">🦉</span><b>Jejda, něco se zaseklo.</b><button class="btn main" id="oopsGo">🏠 Do menu</button>';document.body.appendChild(t);$('oopsGo').onclick=toMenu});
 fixAll();
 if(ST.cur&&P()){view='home'}
 render();
