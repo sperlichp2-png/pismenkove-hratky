@@ -46,6 +46,13 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 .tr{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr) 40px 40px 40px 40px!important;padding:2px 4px;border-radius:10px}
 .tr .btn{padding:0;justify-content:center}.tr.ok{background:light-dark(#e6f7ee,#173a2b)}.tr.ok [data-a=o]{background:var(--g);color:#fff}
 .tr.ch input{border-color:var(--y);font-weight:800}.tr .lab{font:800 18px "Baloo 2",sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ctabs{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:4px 0 14px}.ctabs button{width:72px;height:64px;font-size:38px;border-radius:18px;background:var(--pale);border:3px solid transparent}
+.ctabs button[aria-pressed=true]{border-color:var(--b);background:var(--board);box-shadow:0 4px 0 var(--b)}
+.shopi.own{opacity:.6}.shopi.own b{color:var(--g)}
+.piggy{display:flex;align-items:center;gap:8px;background:light-dark(#ffe9f0,#3a2433);border-radius:20px;padding:6px 12px;margin-bottom:12px;cursor:pointer;text-align:left}
+.piggy .prog i span{background:linear-gradient(90deg,#ff8fb1,#e8433a)}
+.world{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;min-height:110px;padding:14px 10px 10px;border-radius:22px;background:linear-gradient(light-dark(#bfe6ff,#1b2f4a) 0 55%,light-dark(#9fd88a,#21482a) 55%)}
+.world button{font-size:clamp(44px,9vw,70px);line-height:1}
 .vrow{display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--line)}
 .prog i{display:block;height:12px;border-radius:9px;background:var(--pale);overflow:hidden}
 .prog i span{display:block;height:100%;background:linear-gradient(90deg,var(--y),#ff9b3c);border-radius:9px}
@@ -106,7 +113,8 @@ h1 span{color:var(--r)}
 .msg{color:var(--soft);font-size:16px;max-width:52ch;margin:12px auto}
 .ok{color:var(--g);font:800 26px "Baloo 2",sans-serif;min-height:38px;margin:4px 0}
 .things{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 14px;margin:10px auto;max-width:560px}
-.five{display:flex;gap:2px;font-size:clamp(28px,6.5vw,42px);line-height:1.15}
+.five{display:flex;gap:.08em;line-height:1.15}
+.things{max-width:900px!important}
 .x{opacity:.3;position:relative}
 .ex{font:800 clamp(48px,12vw,84px)/1.1 "Baloo 2",sans-serif;margin:8px 0;white-space:nowrap}
 .ex .q{display:inline-block;min-width:1.1em;border-bottom:6px solid var(--b);color:var(--b)}
@@ -161,6 +169,9 @@ select,input[type=number],input[type=text]{font-size:16px;padding:8px 10px;borde
 @keyframes shake{20%,60%{transform:translateX(-8px)}40%,80%{transform:translateX(8px)}}
 @keyframes pop{50%{transform:scale(1.18) rotate(-4deg)}}
 @keyframes fly{to{transform:translate(var(--x),var(--y2)) rotate(var(--rot));opacity:0}}
+@media(min-width:700px){.wrap{max-width:1100px}.pic{font-size:clamp(150px,22vw,230px)}.tile.xl{min-width:120px;height:120px;font-size:70px}.tile{min-width:84px;height:84px;font-size:50px}
+.opt{width:170px;height:170px;font-size:110px}.gt{min-height:190px}.gi{font-size:58px;min-height:100px;flex-wrap:nowrap;gap:4px}.gl{font-size:18px}.mt{min-width:44px;height:52px;font-size:32px}
+.slot{width:84px;height:96px;font-size:56px}.syl{font-size:110px}.syl.s{font-size:64px}.ex{font-size:100px}.word{font-size:96px}.round{width:64px;height:64px}.ib{width:76px;height:76px;font-size:36px}}
 @media(max-width:420px){.games,.who{grid-template-columns:1fr 1fr}.gt{min-height:130px}.gi{font-size:44px}}
 @media(prefers-reduced-motion:reduce){.pop,.no,.fx{animation:none}.fx{display:none}}
 </style>
@@ -184,7 +195,7 @@ const ALPHA=['A','Á','B','C','Č','D','Ď','E','É','Ě','F','G','H','CH','I','
 const LONG={'Á':'A','É':'E','Í':'I','Ó':'O','Ú':'U','Ů':'U','Ý':'Y'};
 const VOW=new Set(['A','Á','E','É','Ě','I','Í','O','Ó','U','Ú','Ů','Y','Ý']);
 const ORDER=['A','M','L','E','S','O','P','U','I','T','J','V','N','D','K','Y','Z','R','B','C','H','CH','Č','Š','Ž','Ř','Ě','F','G','Ď','Ť','Ň','X','W','Q','Á','É','Í','Ó','Ú','Ů','Ý'];
-const NAME={A:'á',Á:'á s čárkou',B:'bé',C:'cé',Č:'čé',D:'dé',Ď:'ďé',E:'é',É:'é s čárkou',Ě:'é s háčkem',F:'ef',G:'gé',H:'há',CH:'chá',I:'í',Í:'í s čárkou',J:'jé',K:'ká',L:'el',M:'em',N:'en',Ň:'Ň',O:'ó',Ó:'ó s čárkou',P:'pé',Q:'kvé',R:'er',Ř:'eř',S:'es',Š:'eš',T:'té',Ť:'ťé',U:'ú',Ú:'ú s čárkou',Ů:'ů s kroužkem',V:'vé',W:'dvojité vé',X:'iks',Y:'ypsilon',Ý:'ypsilon s čárkou',Z:'zet',Ž:'žet'};
+const NAME={A:'á',Á:'á s čárkou',B:'bé',C:'cé',Č:'čé',D:'dé',Ď:'ďé',E:'é',É:'é s čárkou',Ě:'é s háčkem',F:'ef',G:'gé',H:'há',CH:'chá',I:'í',Í:'í s čárkou',J:'jé',K:'ká',L:'el',M:'em',N:'en',Ň:'eň',O:'ó',Ó:'ó s čárkou',P:'pé',Q:'kvé',R:'er',Ř:'eř',S:'es',Š:'eš',T:'té',Ť:'ťé',U:'ú',Ú:'ú s čárkou',Ů:'ů s kroužkem',V:'vé',W:'dvojité vé',X:'iks',Y:'ypsilon',Ý:'ypsilon s čárkou',Z:'zet',Ž:'žet'};
 const NW=['nula','jedna','dvě','tři','čtyři','pět','šest','sedm','osm','devět','deset','jedenáct','dvanáct','třináct','čtrnáct','patnáct','šestnáct','sedmnáct','osmnáct','devatenáct','dvacet'];
 const RAW='LA-MA🦙 PES🐕 LES🌲 O-SEL🫏 MÍ-SA🥣 MÁ-MA👩 MA-PA🗺️ LU-PA🔍 PI-LA🪚 MA-SO🥩 PU-SA👄 SŮL🧂 TÁ-TA👨 AU-TO🚗 SA-LÁT🥗 PA-LE-TA🎨 ME-TLA🧹 '
 +'O-KO👁️ U-CHO👂 NOS👃 RU-KA✋ NO-HA🦵 ZUB🦷 STROM🌳 DŮM🏠 VLAK🚂 KO-LO🚲 LOĎ⛵ MÍČ⚽ KOČ-KA🐈 MYŠ🐭 KRÁ-VA🐄 KO-ZA🐐 OV-CE🐑 KŮŇ🐴 PRA-SE🐖 SLE-PI-CE🐔 KACH-NA🦆 HU-SA🪿 SO-VA🦉 RY-BA🐟 ŽÁ-BA🐸 HAD🐍 LEV🦁 TY-GR🐅 SLON🐘 O-PI-CE🐒 MED-VĚD🐻 LIŠ-KA🦊 ZA-JÍC🐇 JE-ŽEK🦔 VČE-LA🐝 MO-TÝL🦋 PA-VOUK🕷️ ŠNEK🐌 VEL-RY-BA🐋 DEL-FÍN🐬 KRAB🦀 PTÁK🐦 PA-POU-ŠEK🦜 ŽI-RA-FA🦒 ZE-BRA🦓 DRAK🐉 MOU-CHA🪰 VLK🐺 KLO-KAN🦘 TUČ-ŇÁK🐧 KRO-KO-DÝL🐊 ŽE-LVA🐢 VE-VER-KA🐿️ KO-HOUT🐓 BE-RUŠ-KA🐞 JED-NO-RO-ŽEC🦄 VEL-BLOUD🐫 HROCH🦛 NO-SO-RO-ŽEC🦏 PAN-DA🐼 '
@@ -232,6 +243,9 @@ const BADGES=[
  {id:'mL30',i:'🧙',n:'Písmenkový kouzelník',d:'Ovládni třicet písmenek.',t:p=>mastK(p,'L:')>=30},
  {id:'mN10',i:'🔟',n:'Deset čísel',d:'Ovládni deset čísel. Každé musíš pětkrát poznat.',t:p=>mastK(p,'N:')>=10},
  {id:'mN21',i:'🎯',n:'Čísla do dvaceti',d:'Ovládni všechna čísla od nuly do dvaceti.',t:p=>mastK(p,'N:')>=21},
+ {id:'b1',i:'🛒',n:'První nákup',d:'Kup si v obchodě první věc.',t:p=>Object.keys(p.st.own||{}).length>=1},
+ {id:'b10',i:'🏡',n:'Sběratel',d:'Měj deset věcí nebo zvířátek.',t:p=>Object.keys(p.st.own||{}).length>=10},
+ {id:'bbig',i:'💰',n:'Šetřílek',d:'Našetři si a kup věc aspoň za čtyřicet mincí.',t:p=>VIT.some(x=>x.c>=40&&(p.st.own||{})[x.id])},
  {id:'all',i:'🎪',n:'Vyzkoušel jsem všechno',d:'Zahraj si každou hru.',t:p=>GAMES.every(g=>(p.st.g[g.id]||{}).ok)}];
 const SPK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.8 6a9 9 0 0 1 0 12"/></svg>';
 const HOME='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"><path d="M3 11 12 3l9 8M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/></svg>';
@@ -243,7 +257,7 @@ const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'
 const $=id=>document.getElementById(id);
 const rid=()=>Math.random().toString(36).slice(2,9);
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
-const DSET={on:['A','M','L','E','S','O','P','U','I'],lfull:true,wmode:'slovo',goal:15,auto:true,lower:false,speak:true,kb:0,partial:true,max:10,ops:['+'],rewards:[{id:'r1',e:'📺',n:'Pohádka navíc',c:5},{id:'r2',e:'🎲',n:'Hra s rodičem',c:4},{id:'r3',e:'🍦',n:'Zmrzlina',c:8},{id:'r4',e:'🛝',n:'Výlet na hřiště',c:10}],chal:10,cross:false,aid:true,rate:0.85};
+const DSET={on:['A','M','L','E','S','O','P','U','I'],lfull:true,wmode:'slovo',goal:15,auto:true,lower:false,speak:true,kb:0,partial:true,max:10,ops:['+'],realRw:false,rewards:[{id:'r1',e:'📺',n:'Pohádka navíc',c:5},{id:'r2',e:'🎲',n:'Hra s rodičem',c:4},{id:'r3',e:'🍦',n:'Zmrzlina',c:8},{id:'r4',e:'🛝',n:'Výlet na hřiště',c:10}],chal:10,cross:false,aid:true,rate:0.85};
 const newP=(name,av)=>fixP({id:rid(),name,av,set:{...DSET,on:DSET.on.slice(),ops:['+']},st:{}});
 let ST={profiles:[],cur:null,ts:0};
 try{localStorage.removeItem('pismenka-v2');localStorage.removeItem('pismenka-voice')}catch(e){}
@@ -284,7 +298,8 @@ function say(parts,pref,rf){parts=[].concat(parts).filter(Boolean);if(!parts.len
   if(e.c){try{speechSynthesis.cancel()}catch(x){}try{ctts.speak(parts.map(t=>({text:t,voice:e.c})),{language:'cs',rate:Math.max(.7,Math.min(1.5,r+.1))}).then(()=>spoke(g),()=>spoke(g))}catch(x){spoke(g)}return}
   try{speechSynthesis.cancel();try{ctts&&ctts.stop()}catch(x){}parts.forEach((t,i)=>{const u=new SpeechSynthesisUtterance(t);u.lang='cs-CZ';if(e.v)u.voice=e.v;u.rate=r;if(i===parts.length-1){u.onend=()=>setTimeout(()=>spoke(g),250);u.onerror=()=>spoke(g)}speechSynthesis.speak(u)})}catch(x){spoke(g)}}
 const hush=()=>{const hg=++tgen;try{speechSynthesis.cancel()}catch(e){}try{ctts&&ctts.stop()}catch(e){}qcb=qcb.filter(f=>f===showPop);setTimeout(()=>spoke(hg),200)};
-const pn=g=>(ST.pron&&ST.pron[g])||NAME[g]||g.toLowerCase();
+const NAME_MS={Ň:'Ň'};
+const pn=g=>(ST.pron&&ST.pron[g])||(msV()&&NAME_MS[g])||NAME[g]||g.toLowerCase();
 const ln=(g,full)=>{const n=pn(g);return full?'písmenko '+n:n};
 const sayLn=(g,full)=>say(', '+ln(g,full)+'.',null,.8);
 const sayL=g=>{if(S().speak)sayLn(g,S().lfull)};
@@ -297,7 +312,8 @@ const sp=x=>{const o=wo(x);if(o)return o;const t=x.toLowerCase();if(WSET.has(x)&
 /* výchozí výslovnost slabik ověřená rodičem (hlas Antonín) */
 const SDEF={BE:'Slabika bbe.',BÓN:'Slabika bón, jako bonbón.',HA:'Slabika hha.',HR:'Slabika hrr, jako hrnek.',HU:'Slabika hhu.',KEV:'Slabika kef, jako mrkev.',LÉV:'Slabika léf, jako polévka.',LÓ:'Slabika ló, jako balónek.',MLÉ:'Slabika mlé, jako mléko.',MR:'Slabika mrr, jako mrkev.',O:'Slabika o, jako oko.',PI:'Slabika pí.',RU:'Slabika rru.',SO:'Slabika sso.',SRD:'Slabika srt, jako srdce.',SU:'Slabika ssu.',U:'Slabika u, jako ucho.',VA:'Slabika vva.',ZMR:'Slabika zmrr, jako zmrzlina.',ŽEC:'Slabika žets.'};
 const sylEx=x=>{const w=WORDS.find(w=>w.s[0]===x&&w.s.length>1)||WORDS.find(w=>w.s.includes(x)&&w.s.length>1);return w?w.w.toLowerCase():''};
-const spS=x=>(ST.spron&&ST.spron[x])||SDEF[x]||'Slabika '+x.toLowerCase()+'.';
+const msV=()=>{const e=engine();return !!(e.v&&/microsoft/i.test(e.v.name))};
+const spS=x=>(ST.spron&&ST.spron[x])||(msV()&&SDEF[x])||'Slabika '+x.toLowerCase()+'.';
 const nwd=n=>NW[n];
 const numS=n=>(ST.npron&&ST.npron[n])||'Číslo '+NW[n]+'.';
 let ac=null;
@@ -316,14 +332,26 @@ const fullW=()=>WORDS.filter(w=>w.g.every(eff));
 const bags={};
 function draw(key,items,idf){key=ST.cur+':'+key;const ids=items.map(idf),sig=ids.join('|');let b=bags[key];
   if(!b||b.sig!==sig)b=bags[key]={sig,q:[],last:null};
-  if(!b.q.length){b.q=shuf(ids);if(b.q.length>1&&b.q[0]===b.last)b.q.push(b.q.shift())}
-  const id=b.q.shift();b.last=id;return items[ids.indexOf(id)]}
-function again(key,id){const b=bags[ST.cur+':'+key];if(b&&!b.q.slice(0,3).includes(id))b.q.splice(Math.min(2,b.q.length),0,id)}
+  if(!b.q.length){b.q=shuf(ids);b.ag={};if(b.q.length>1&&b.q[0]===b.last)b.q.push(b.q.shift())}
+  let ix=b.q.findIndex((x,i)=>i<8&&x!==b.last&&!RECENT.includes(x));if(ix<0)ix=b.q.findIndex(x=>x!==b.last);if(ix<0)ix=0;
+  const id=b.q.splice(ix,1)[0];b.last=id;RECENT.push(id);if(RECENT.length>14)RECENT.shift();return items[ids.indexOf(id)]}
+/* chybné slovo se vrátí nejvýš jednou za kolo a až za pár úkolů */
+function again(key,id){const b=bags[ST.cur+':'+key];if(!b)return;b.ag=b.ag||{};if(b.ag[id]||b.q.includes(id))return;b.ag[id]=1;b.q.splice(Math.min(5,b.q.length),0,id)}
+const RECENT=[],DSEEN=[];
+/* rušivé možnosti (špatné odpovědi) se také střídají */
+function fresh(arr,n,idf){idf=idf||(x=>x);const r=shuf(arr).sort((a,b)=>DSEEN.indexOf(idf(a))-DSEEN.indexOf(idf(b)));const o=r.slice(0,n);o.forEach(x=>{const i=DSEEN.indexOf(idf(x));if(i>=0)DSEEN.splice(i,1);DSEEN.push(idf(x))});if(DSEEN.length>40)DSEEN.splice(0,DSEEN.length-40);return o}
 const near=(v,lo,hi,n)=>{const s=new Set([v]);let d=1;while(s.size<n&&d<25){[v+d,v-d].forEach(x=>{if(x>=lo&&x<=hi&&s.size<n)s.add(x)});d++}return shuf([...s])};
-function things(n,crossed=0,item){item=item||pick(ITEMS);let h='';for(let i=0;i<n;i+=5){h+='<span class="five">';for(let j=i;j<Math.min(n,i+5);j++)h+='<span'+(j>=n-crossed?' class="x"':'')+'>'+item+'</span>';h+='</span>';if(i%10===5&&i+5<n)h+='<span style="flex-basis:100%"></span>'}return '<div class="things">'+h+'</div>'}
+function things(n,crossed=0,item,sc){item=item||pick(ITEMS);sc=sc||1;const z=n<=5?[64,15,130]:n<=10?[50,11,96]:[38,8,70];let h='';for(let i=0;i<n;i+=5){h+='<span class="five">';for(let j=i;j<Math.min(n,i+5);j++)h+='<span'+(j>=n-crossed?' class="x"':'')+'>'+item+'</span>';h+='</span>';if(i%10===5&&i+5<n)h+='<span style="flex-basis:100%"></span>'}return '<div class="things" style="font-size:clamp('+Math.round(z[0]*sc)+'px,'+(z[1]*sc).toFixed(1)+'vw,'+Math.round(z[2]*sc)+'px)">'+h+'</div>'}
 
 /* ================= HODNOCENÍ ================= */
-const fixP=p=>{p.set={...DSET,...(p.set||{})};const s=p.st=p.st||{};s.stars=s.stars||0;s.g=s.g||{};s.miss=s.miss||{};s.hit=s.hit||{};s.days=s.days||[];s.badges=s.badges||{};s.best=s.best||0;s.goals=s.goals||0;s.coins=s.coins||0;s.stickers=s.stickers||{};s.chal=s.chal||{};s.pend=s.pend||[];s.given=s.given||[];return p};
+const fixP=p=>{p.set={...DSET,...(p.set||{})};const s=p.st=p.st||{};s.stars=s.stars||0;s.g=s.g||{};s.miss=s.miss||{};s.hit=s.hit||{};s.days=s.days||[];s.badges=s.badges||{};s.best=s.best||0;s.goals=s.goals||0;s.coins=s.coins||0;s.stickers=s.stickers||{};s.chal=s.chal||{};s.pend=s.pend||[];s.own=s.own||{};s.given=s.given||[];return p};
+/* virtuální obchod: cena podle velikosti a oblíbenosti */
+const VCAT=[['zvir','🐾','Zvířátka'],['auta','🚗','Auta'],['stroje','🚜','Stroje a technika'],['let','🚀','Létání a lodě']];
+const VIT=[['mys','🐭','Myška',2,'zvir'],['krecek','🐹','Křeček',3,'zvir'],['kure','🐥','Kuřátko',2,'zvir'],['zajic','🐰','Králíček',4,'zvir'],['kocka','🐱','Kočička',6,'zvir'],['pes','🐶','Pejsek',6,'zvir'],['zelva','🐢','Želvička',5,'zvir'],['papousek','🦜','Papoušek',8,'zvir'],['ovce','🐑','Ovečka',7,'zvir'],['prase','🐷','Prasátko',8,'zvir'],['koza','🐐','Kozička',8,'zvir'],['krava','🐄','Kravička',14,'zvir'],['kun','🐴','Koník',18,'zvir'],['tucnak','🐧','Tučňák',12,'zvir'],['panda','🐼','Panda',22,'zvir'],['delfin','🐬','Delfín',26,'zvir'],['lev','🦁','Lev',30,'zvir'],['tygr','🐯','Tygr',30,'zvir'],['zirafa','🦒','Žirafa',35,'zvir'],['slon','🐘','Slon',40,'zvir'],['velryba','🐳','Velryba',50,'zvir'],['dino','🦖','Dinosaurus',60,'zvir'],['jednorozec','🦄','Jednorožec',70,'zvir'],['drak','🐉','Drak',90,'zvir'],
+['kolobezka','🛴','Koloběžka',3,'auta'],['kolo','🚲','Kolo',5,'auta'],['skutr','🛵','Skútr',9,'auta'],['auto','🚗','Auto',14,'auta'],['taxi','🚕','Taxík',15,'auta'],['dodavka','🚐','Dodávka',18,'auta'],['motorka','🏍️','Motorka',16,'auta'],['policie','🚓','Policejní auto',22,'auta'],['sanitka','🚑','Sanitka',22,'auta'],['hasici','🚒','Hasičské auto',28,'auta'],['nakladak','🚚','Náklaďák',30,'auta'],['kamion','🚛','Kamion',38,'auta'],['autobus','🚌','Autobus',35,'auta'],['sportak','🏎️','Sporťák',55,'auta'],
+['vysavac','🤖','Robotický vysavač',12,'stroje'],['traktor','🚜','Traktor',25,'stroje'],['bagr','🏗️','Jeřáb',40,'stroje'],['vlak','🚂','Mašinka',45,'stroje'],['tramvaj','🚋','Tramvaj',35,'stroje'],['metro','🚇','Metro',50,'stroje'],['kostky','🧱','Stavebnice',6,'stroje'],['pc','💻','Počítač',30,'stroje'],['kytara','🎸','Kytara',15,'stroje'],['dalekohled','🔭','Dalekohled',20,'stroje'],
+['drak2','🪁','Papírový drak',3,'let'],['balon','🎈','Balónek',2,'let'],['lodka','⛵','Plachetnice',25,'let'],['clun','🚤','Motorový člun',30,'let'],['vrtulnik','🚁','Vrtulník',60,'let'],['letadlo','✈️','Letadlo',80,'let'],['lod','🛳️','Zaoceánská loď',90,'let'],['raketa','🚀','Raketa',100,'let'],['ufo','🛸','Létající talíř',120,'let']].map(([id,e,n,c,cat])=>({id,e,n,c,cat}));
+let shopCat='zvir';
 const STK=['🦕','🦖','🐙','🦈','🦩','🦚','🐳','🐲','🐞','🦔','🐨','🐼','🚒','🚓','🚑','🏎️','🚁','🛸','🚀','🌋','🏰','🎡','🎠','🎢','🌈','🌙','🍩','🍉','🧁','🍓','🎸','🥁','🎺','🎨','⚽','🏀','🎯','🪁','🧸','🪀','🎃','🎄','⛄','🦄','👑','💎','🔮','🏆'];
 const REM_E=['📺','🎲','🍦','🛝','🍫','🎮','🚲','🎬','🧸','🍕','🌳','🎨','📚','🏊','🎁','🎉','🐶','🛁','🍿','⚽'];
 const numW=n=>n<=20?nwd(n):String(n);
@@ -335,7 +363,7 @@ function win(game){tone(true);const p=P();rec(game,true);const L0=lvOf(p.st.star
   const t=today();if(p.st.day!==t){p.st.day=t;p.st.today=0}
   if(!p.st.days.includes(t)){p.st.days.push(t);if(p.st.days.length>400)p.st.days.shift()}
   R.n++;R.streak=clean?R.streak+1:0;p.st.best=Math.max(p.st.best,R.streak);
-  let add=1;if(R.n%5===0)add+=2;p.st.stars+=add;p.st.today+=add;
+  let add=1;if(R.n%5===0){add+=2;p.st.coins+=1}p.st.stars+=add;p.st.today+=add;
   const goal=+S().goal||15;
   if(p.st.goalDay===t){const c=p.st.chal.day===t?p.st.chal:(p.st.chal={day:t,n:0,done:false});const ct=+S().chal||10;
     if(!c.done){c.n++;if(c.n>=ct){c.done=true;p.st.coins+=2;fanfare();pickReward('Výzva splněná!',['Hurá! Výzva je splněná.','Máš dvě mince a můžeš si vybrat samolepku.'])}}}
@@ -414,7 +442,7 @@ function gSlova(){const k=known();const full=fullW();const part=S().partial?WORD
 /* --- 2 na co začíná --- */
 function gZacina(){const k=known();const p=WORDS.filter(w=>eff(w.g[0]));if(k.length<2||!p.length)return empty('Hra potřebuje aspoň dvě zapnutá písmena.');
   const w=draw('zacina',p,x=>x.w);const f=w.g[0];const fb=LONG[f]||f;
-  const opts=shuf([f,...shuf(k.filter(l=>l!==f&&(LONG[l]||l)!==fb)).slice(0,3)]);
+  const opts=shuf([f,...fresh(k.filter(l=>l!==f&&(LONG[l]||l)!==fb),3,l=>'L'+l)]);
   stage().innerHTML='<div><span class="pic" id="pic">'+w.e+'</span></div>'+hearBtn('hear')+'<div class="row" id="o">'+opts.map(l=>'<button class="tile xl '+col(l)+'" data-l="'+l+'">'+disp(l)+'</button>').join('')+'</div><p class="ok" id="ok"></p>';
   $('hear').onclick=()=>say(sp(w.w));sayQ(sp(w.w));let done=false;
   $('o').onclick=ev=>{const b=ev.target.closest('.tile');if(!b||done)return;
@@ -479,7 +507,7 @@ function gTleskani(){const w=draw('tles',WORDS.filter(x=>x.s.length<=4),x=>x.w);
 
 /* --- 7 čtu a ukážu --- */
 function gCteni(){const p=fullW();if(p.length<3)return empty('Pro čtení jsou potřeba aspoň tři slova ze zapnutých písmen. Zapněte další písmeno.');
-  const w=draw('cteni',p,x=>x.w);const o=shuf([w,...shuf(p.filter(x=>x.e!==w.e)).slice(0,2)]);
+  const w=draw('cteni',p,x=>x.w);const o=shuf([w,...fresh(p.filter(x=>x.e!==w.e&&x.w!==w.w),2,x=>x.w)]);
   stage().innerHTML='<div class="word">'+w.g.map(disp).join('')+'</div><div class="opts" id="o">'+o.map(x=>'<button class="opt" data-w="'+x.w+'" aria-label="obrázek">'+x.e+'</button>').join('')+'</div>'
   +'<div class="tools"><button class="ib" id="hear" aria-label="Přečti mi to">'+SPK+'</button></div>';
   $('hear').onclick=()=>{say(sp(w.w));again('cteni',w.w)};let done=false;
@@ -505,7 +533,7 @@ function gUkaz(){const m=mx();const N=draw('ukaz',Array.from({length:m+1},(_,i)=
 /* --- 10 porovnej --- */
 function gPorovnej(){const m=mx();let a=rnd(0,m),b=Math.random()<.2?a:rnd(0,m);if(a===b&&Math.random()<.5)b=rnd(0,m);
   const r=a>b?'>':a<b?'<':'=';const it=pick(ITEMS);const aid=S().aid;
-  stage().innerHTML='<div class="cmp"><div class="side">'+(aid?things(a,0,it):'')+'<div class="n">'+a+'</div></div><div class="mid" id="mid">?</div><div class="side">'+(aid?things(b,0,it):'')+'<div class="n">'+b+'</div></div></div>'
+  stage().innerHTML='<div class="cmp"><div class="side">'+(aid?things(a,0,it,.55):'')+'<div class="n">'+a+'</div></div><div class="mid" id="mid">?</div><div class="side">'+(aid?things(b,0,it,.55):'')+'<div class="n">'+b+'</div></div></div>'
   +'<div class="row" id="o">'+['<','=','>'].map(s=>'<button class="tile xl c2" data-s="'+s+'">'+esc(s)+'</button>').join('')+'</div>';
   const W={'<':'je menší než','>':'je větší než','=':'se rovná'};let done=false;
   $('o').onclick=ev=>{const x=ev.target.closest('[data-s]');if(!x||done)return;
@@ -523,7 +551,7 @@ function makeEx(){const s=S(),m=mx(),ops=s.ops&&s.ops.length?s.ops:['+'];
     recent.push(key);if(recent.length>12)recent.shift();return {a,b,c,op}}
   return {a:1,b:1,c:2,op:'+'}}
 function gPriklady(){const m=mx();const {a,b,c,op}=makeEx();const aid=S().aid&&Math.max(a,b,c)<=20;const it=pick(ITEMS);
-  const vis=aid?(op==='+'?'<div class="things" style="align-items:center">'+things(a,0,it)+'<b style="font-size:40px">+</b>'+things(b,0,it)+'</div>':things(a,b,it)):'';
+  const vis=aid?(op==='+'?'<div class="things" style="align-items:center">'+things(a,0,it,.7)+'<b style="font-size:56px">+</b>'+things(b,0,it,.7)+'</div>':things(a,b,it)):'';
   stage().innerHTML=vis+'<div class="ex">'+a+' '+(op==='-'?'−':'+')+' '+b+' = <span class="q" id="q">?</span></div>'+numOpts(c,0,m,'o');
   const txt=nwd(a)+(op==='+'?' plus ':' mínus ')+nwd(b);sayQ(txt);let done=false;
   $('o').onclick=ev=>{const x=ev.target.closest('[data-n]');if(!x||done)return;
@@ -552,12 +580,12 @@ function barHTML(){const p=P();const s=p.st.stars,L=lvOf(s),a=lvStart(L),b=lvSta
   return '<div class="me"><span class="av">'+esc(p.av)+'</span><span class="lvl" aria-label="úroveň">'+L+'</span><span class="prog"><small>'+lvAn(L)+' ⭐ '+s+' / '+b+'</small><i><span style="width:'+pc+'%"></span></i></span></div>'}
 function drawBar(){const el=$('meBar');if(el&&P())el.innerHTML=barHTML()}
 const KR=['','jednou','dvakrát','třikrát','čtyřikrát','pětkrát'];
-function goalHTML(){const p=P(),s=S(),t=today(),n=p.st.day===t?p.st.today:0,g=+s.goal||15,done=p.st.goalDay===t;
+function goalHTML(){const gI=P().st.goalItem&&VIT.find(x=>x.id===P().st.goalItem&&!P().st.own[x.id]);const p=P(),s=S(),t=today(),n=p.st.day===t?p.st.today:0,g=+s.goal||15,done=p.st.goalDay===t;
   const c=p.st.chal.day===t?p.st.chal:{n:0,done:false},ct=+s.chal||10;
   const inner=!done?'<span style="font-size:36px">🎁</span><span class="prog"><i><span style="width:'+Math.min(100,Math.round(n/g*100))+'%"></span></i></span><b>'+Math.min(n,g)+' / '+g+' ⭐</b>'
     :c.done?'<span style="font-size:36px">🎉</span><span class="prog"><i><span style="width:100%;background:var(--g)"></span></i></span><b>✔ ⚡</b>'
     :'<span style="font-size:36px">⚡</span><span class="prog"><i><span style="width:'+Math.round(c.n/ct*100)+'%;background:linear-gradient(90deg,#8a4fd0,#e8433a)"></span></i></span><b>'+c.n+' / '+ct+'</b>';
-  return '<div class="grow"><button class="goal'+(done?' done':'')+'" id="goal" aria-label="Dnešní cíl">'+inner+'</button><button class="coin" id="shop" aria-label="Obchod s odměnami"><span>🛍️</span><b>🪙 '+p.st.coins+'</b>'+(p.st.pend.length?'<i>'+p.st.pend.length+'</i>':'')+'</button></div>'}
+  return '<div class="grow"><button class="goal'+(done?' done':'')+'" id="goal" aria-label="Dnešní cíl">'+inner+'</button><button class="coin" id="shop" aria-label="Obchod"><span>'+(gI?gI.e:'🛍️')+'</span><b>🪙 '+p.st.coins+(gI?' / '+gI.c:'')+'</b>'+(S().realRw&&p.st.pend.length?'<i>'+p.st.pend.length+'</i>':'')+'</button></div>'}
 function render(){hush();clearTimeout(timer);const app=$('app');
   if(!ST.profiles.length||!P())view=view==='who'?'who':'who';
   if(view==='who'){app.innerHTML='<div class="bar"><span style="flex:1"></span><button class="round" id="pb" aria-label="Pro rodiče">'+LOCK+'</button></div><h1>Kdo si bude <span>hrát?</span></h1>'
@@ -576,19 +604,37 @@ function render(){hush();clearTimeout(timer);const app=$('app');
     $('shop').onclick=()=>{view='shop';render();say(['Obchod s odměnami.','Máš '+numW(Math.min(P().st.coins,20))+' mincí.'])};
     app.querySelector('.worlds').onclick=e=>{const b=e.target.closest('.world');if(!b)return;world=b.dataset.w;render();say(world==='L'?'Písmenka':'Čísla')};
     app.querySelector('.games').onclick=e=>{const b=e.target.closest('.gt');if(b)openGame(b.dataset.g)};return}
-  if(view==='shop'){const p=P(),st=p.st,rw=S().rewards||[];const it=x=>'<button class="bdg shopi'+(st.coins<x.c?' poor':'')+'" data-k="'+esc(x.k)+'"><span>'+esc(x.e)+'</span><small>'+esc(x.n)+'</small><b>🪙 '+x.c+'</b></button>';
-    const items=rw.map(r=>({k:'r:'+r.id,e:r.e,n:r.n,c:+r.c||1}));const sti=STK.filter(x=>!st.stickers[x]).map(x=>({k:'s:'+x,e:x,n:'Samolepka',c:3}));
+  if(view==='shop'){const p=P(),st=p.st,real=!!S().realRw,rw=real?(S().rewards||[]):[];
+    const cats=VCAT.concat(real?[['real','🎁','Skutečné odměny']]:[]).concat([['stk','🌟','Samolepky']]);if(!cats.find(c=>c[0]===shopCat))shopCat='zvir';
+    const gi=st.goalItem&&VIT.find(x=>x.id===st.goalItem&&!st.own[x.id]);
+    let list;if(shopCat==='real')list=rw.map(r=>({k:'r:'+r.id,e:r.e,n:r.n,c:+r.c||1}));
+    else if(shopCat==='stk')list=STK.filter(x=>!st.stickers[x]).map(x=>({k:'s:'+x,e:x,n:'Samolepka',c:3}));
+    else list=VIT.filter(x=>x.cat===shopCat).map(x=>({k:'v:'+x.id,e:x.e,n:x.n,c:x.c,own:!!st.own[x.id]}));
+    const card=x=>'<button class="bdg shopi'+(x.own?' own':st.coins<x.c?' poor':'')+'" data-k="'+esc(x.k)+'"><span>'+esc(x.e)+'</span><small>'+esc(x.n)+'</small><b>'+(x.own?'✔ mám':'🪙 '+x.c)+'</b></button>';
+    const owned=VIT.filter(x=>st.own[x.id]);
     app.innerHTML='<div class="bar"><button class="round" id="bk" aria-label="Zpět">'+BACK+'</button><div class="coin" style="flex:1;justify-content:center;font-size:30px"><b>🪙 '+st.coins+'</b></div></div>'
-    +'<main class="stage" id="stage"><h2 class="ah" style="margin-top:0">🎁 Odměny</h2><div class="bdgs" id="sh">'+(items.length?items.map(it).join(''):'<p class="note">Rodiče zatím nepřidali žádné odměny.</p>')+'</div>'
-    +(st.pend.length?'<h2 class="ah">⏳ Čeká na rodiče</h2><div class="bdgs">'+st.pend.map(x=>'<div class="bdg"><span>'+esc(x.e)+'</span><small>'+esc(x.n)+'</small></div>').join('')+'</div>':'')
-    +'<h2 class="ah">🌟 Samolepky</h2><div class="bdgs" id="ss">'+sti.map(it).join('')+'</div>'
-    +'<p class="note">🪙 Mince: denní cíl +3, nová úroveň +2, výzva navíc +2, rodiče mohou přidat za úkoly mimo hru.</p></main>';
+    +'<main class="stage" id="stage">'
+    +(gi?'<div class="piggy" id="piggy"><span style="font-size:48px">🐷</span><span style="font-size:52px">'+gi.e+'</span><span class="prog"><small>Šetřím na: '+esc(gi.n)+' · 🪙 '+Math.min(st.coins,gi.c)+' / '+gi.c+'</small><i><span style="width:'+Math.min(100,Math.round(st.coins/gi.c*100))+'%"></span></i></span><button class="ib" id="noGoal" aria-label="Přestat šetřit" style="width:48px;height:48px;font-size:22px">✖</button></div>':'')
+    +'<div class="ctabs" id="ct">'+cats.map(c=>'<button data-c="'+c[0]+'" aria-pressed="'+(shopCat===c[0])+'" aria-label="'+c[2]+'">'+c[1]+'</button>').join('')+'</div>'
+    +'<div class="bdgs" id="sh">'+(list.length?list.map(card).join(''):'<p class="note">Tady už nic není.</p>')+'</div>'
+    +(real&&st.pend.length?'<h2 class="ah">⏳ Čeká na rodiče</h2><div class="bdgs">'+st.pend.map(x=>'<div class="bdg"><span>'+esc(x.e)+'</span><small>'+esc(x.n)+'</small></div>').join('')+'</div>':'')
+    +'<h2 class="ah">🏡 Moje věci '+owned.length+' / '+VIT.length+'</h2><div class="world" id="mine">'+(owned.length?owned.map(x=>'<button data-v="'+x.id+'" aria-label="'+esc(x.n)+'">'+x.e+'</button>').join(''):'<p class="note" style="width:100%;text-align:center">Zatím nic. Kup si první věc!</p>')+'</div>'
+    +'<p class="note">🪙 Mince: každých 5 správných úkolů +1, denní cíl +3, nová úroveň +2, výzva navíc +2.</p></main>';
     $('bk').onclick=()=>{view='home';render()};
-    const all=items.concat(sti);
-    app.querySelector('#stage').onclick=e=>{const b=e.target.closest('[data-k]');if(!b)return;const x=all.find(y=>y.k===b.dataset.k);if(!x)return;
-      if(st.coins<x.c){tone(false);say([x.n+'.','Stojí '+numW(x.c)+' mincí. Máš jen '+numW(st.coins)+'.']);return}
-      confirmBuy(x,()=>{const pp=P();pp.st.coins-=x.c;if(x.k.startsWith('s:'))pp.st.stickers[x.e]=today();else pp.st.pend.push({id:rid(),e:x.e,n:x.n,d:today()});save();fanfare();
-        setTimeout(()=>say(x.k.startsWith('s:')?'Samolepka je tvoje!':'Hurá! Rodiče ti odměnu předají.'),300)})};return}
+    $('ct').onclick=e=>{const b=e.target.closest('[data-c]');if(!b)return;shopCat=b.dataset.c;render();const c=cats.find(x=>x[0]===shopCat);say(c[2])};
+    if(gi){$('noGoal').onclick=()=>{st.goalItem=null;save();render()};$('piggy').onclick=e=>{if(e.target.closest('#noGoal'))return;say(['Šetříš na: '+gi.n+'.',st.coins>=gi.c?'Už na to máš! Ťukni na to a kup si to.':'Chybí ti ještě '+numW(Math.min(gi.c-st.coins,999))+' mincí.'])}}
+    $('mine').onclick=e=>{const b=e.target.closest('[data-v]');if(!b)return;const x=VIT.find(y=>y.id===b.dataset.v);b.classList.remove('pop');void b.offsetWidth;b.classList.add('pop');say(x.n+'. To je tvoje!')};
+    $('sh').onclick=e=>{const b=e.target.closest('[data-k]');if(!b)return;const x=list.find(y=>y.k===b.dataset.k);if(!x)return;
+      if(x.own){say(x.n+'. Tohle už máš!');return}
+      if(st.coins<x.c){tone(false);const vi=x.k.startsWith('v:');
+        if(vi&&st.goalItem!==x.k.slice(2)){pop('<div class="av pop">'+x.e+'</div><h2>'+esc(x.n)+'</h2><p style="font:800 24px \'Baloo 2\',sans-serif">🪙 '+st.coins+' / '+x.c+'</p><p>Chceš si na to šetřit? 🐷</p><div class="tools"><button class="ib" id="cNo" aria-label="Ne" style="background:var(--r);color:#fff">✖</button><button class="ib g" id="cYes" aria-label="Ano">🐷</button></div>',
+          [x.n+'.','Stojí '+numW(Math.min(x.c,999))+' mincí. Máš '+numW(Math.min(st.coins,999))+'.','Chceš si na to šetřit?'],close=>{$('cNo').onclick=close;$('cYes').onclick=()=>{const pp=P();pp.st.goalItem=x.k.slice(2);save();say('Dobře, šetříme!');close()}},true)}
+        else say([x.n+'.','Stojí '+numW(Math.min(x.c,999))+' mincí. Máš jen '+numW(Math.min(st.coins,999))+'.']);return}
+      confirmBuy(x,()=>{const pp=P();pp.st.coins-=x.c;
+        if(x.k.startsWith('s:'))pp.st.stickers[x.e]=today();
+        else if(x.k.startsWith('v:')){const id=x.k.slice(2);pp.st.own[id]=today();if(pp.st.goalItem===id)pp.st.goalItem=null}
+        else pp.st.pend.push({id:rid(),e:x.e,n:x.n,d:today()});
+        save();fanfare();checkBadges();save();setTimeout(()=>say(x.k.startsWith('r:')?'Hurá! Rodiče ti odměnu předají.':'Hurá! '+x.n+' je tvoje!'),300)})};return}
   if(view==='album'){const p=P(),st=p.st,L=lvOf(st.stars),a=lvStart(L),b=lvStart(L+1);const got=BADGES.filter(x=>st.badges[x.id]).length;
     app.innerHTML='<div class="bar"><button class="round" id="bk" aria-label="Zpět">'+BACK+'</button><div id="meBar" style="flex:1;display:flex">'+barHTML()+'</div></div>'
     +'<main class="stage" id="stage"><div style="font-size:96px;line-height:1.1">'+lvAn(L)+'</div><div class="ex" style="font-size:44px">Úroveň '+L+'</div>'
@@ -615,7 +661,7 @@ $('gf').onsubmit=e=>{e.preventDefault();if(+$('ga').value!==ans){$('gm').textCon
   if(gateNext==='add'){const p=newP('Dítě '+(ST.profiles.length+1),AVS[ST.profiles.length%AVS.length]);ST.profiles.push(p);ST.cur=p.id;save();openSet('dite')}else openSet()};
 let vsec='W',vOnly=false;
 const SYLS=[...new Set(WORDS.flatMap(w=>w.s))].sort((a,b)=>a.localeCompare(b,'cs'));
-function vDef(k){const t=k[0],v=k.slice(2);return t==='L'?NAME[v]:t==='N'?'Číslo '+NW[+v]+'.':t==='S'?SDEF[v]||'Slabika '+v.toLowerCase()+'.':WDEF[v]||v.toLowerCase()}
+function vDef(k){const t=k[0],v=k.slice(2);return t==='L'?(msV()&&NAME_MS[v])||NAME[v]:t==='N'?'Číslo '+NW[+v]+'.':t==='S'?(msV()&&SDEF[v])||'Slabika '+v.toLowerCase()+'.':WDEF[v]||v.toLowerCase()}
 function vCur(k){const t=k[0],v=k.slice(2);return t==='L'?pn(v):t==='N'?numS(+v):t==='S'?spS(v):(ST.wpron&&ST.wpron[v])||vDef(k)}
 function setPron(k,val){const t=k[0],v=k.slice(2);val=(val||'').trim();const m=t==='L'?'pron':t==='N'?'npron':t==='S'?'spron':'wpron';ST[m]=ST[m]||{};
   if(!val||val===vDef(k))delete ST[m][t==='N'?+v:v];else ST[m][t==='N'?+v:v]=val;save()}
@@ -667,7 +713,8 @@ function drawSet(){const el=$('setIn');const p=P();
     +'<label class="chk"><input type="checkbox" id="oAid"'+(s.aid?' checked':'')+'> Ukazovat obrázky jako pomůcku (předměty po pěticích)</label>'
     +'<p class="note">Postup jako ve škole: nejdřív do 5, pak do 10, pak do 20 bez přechodu přes desítku, nakonec s přechodem.</p>'}
   if(tab==='odm'){const rw=s.rewards||[];
-    h+='<h3>Mince</h3><p>'+esc(p.name)+' má 🪙 '+p.st.coins+'. Mince dostává za denní cíl (+3), novou úroveň (+2) a výzvu navíc (+2).</p><p class="note">Za úkol mimo hru (úklid, domácí úkol, čtení s rodičem) můžete mince přidat ručně:</p><div class="tools" style="justify-content:flex-start" id="cAdd">'+[1,2,3,5].map(n=>'<button class="btn" data-c="'+n+'">+'+n+' 🪙</button>').join('')+'<button class="btn" data-c="-1">−1 🪙</button></div>'
+    h+='<h3>Mince</h3><p>'+esc(p.name)+' má 🪙 '+p.st.coins+'. Mince dostává za každých 5 správných úkolů (+1), denní cíl (+3), novou úroveň (+2) a výzvu navíc (+2).</p><p class="note">Za úkol mimo hru (úklid, domácí úkol, čtení s rodičem) můžete mince přidat ručně:</p><div class="tools" style="justify-content:flex-start" id="cAdd">'+[1,2,3,5].map(n=>'<button class="btn" data-c="'+n+'">+'+n+' 🪙</button>').join('')+'<button class="btn" data-c="-1">−1 🪙</button></div>'
+    +'<h3>Skutečné odměny</h3><label class="chk"><input type="checkbox" id="oReal"'+(s.realRw?' checked':'')+'> Zobrazit v obchodě i skutečné odměny od rodičů (pohádka, zmrzlina…)</label><p class="note">Když je vypnuto, děti za mince kupují jen virtuální zvířátka, auta, stroje a samolepky.</p>'
     +'<h3>Čeká na předání</h3>'+(p.st.pend.length?p.st.pend.map(x=>'<div class="vrow"><span style="font-size:30px">'+esc(x.e)+'</span><span style="flex:1">'+esc(x.n)+' <small class="note">('+esc(x.d)+')</small></span><button class="btn main" data-g="'+esc(x.id)+'">Předáno ✔</button></div>').join(''):'<p class="note">Nic nečeká.</p>')
     +'<h3>Odměny v obchodě</h3><p class="note">Obrázek, název a cena v mincích. Dítě si odměnu „koupí“ a vy ji pak předáte.</p><div id="rws">'+rw.map((r,i)=>'<div class="rw" data-i="'+i+'"><select data-f="e" aria-label="obrázek">'+REM_E.concat(REM_E.includes(r.e)?[]:[r.e]).map(e=>'<option'+(e===r.e?' selected':'')+'>'+esc(e)+'</option>').join('')+'</select><input type="text" data-f="n" maxlength="30" value="'+esc(r.n)+'" aria-label="název"><input type="number" data-f="c" min="1" max="99" value="'+(+r.c||1)+'" aria-label="cena"><button class="btn" data-del="'+i+'" aria-label="smazat">✖</button></div>').join('')+'</div>'
     +'<div class="tools" style="justify-content:flex-start"><button class="btn" id="rAdd">+ přidat odměnu</button></div>'
@@ -716,7 +763,7 @@ function bindSet(){const p=P();const set=(k,v)=>{p.set[k]=v;save();drawSet()};co
   if(tab==='cis'){q('oMax').onchange=e=>set('max',+e.target.value);
     const ops=()=>{const o=[];if(q('oPlus').checked)o.push('+');if(q('oMinus').checked)o.push('-');set('ops',o.length?o:['+'])};q('oPlus').onchange=ops;q('oMinus').onchange=ops;
     q('oCross').onchange=e=>set('cross',e.target.checked);q('oAid').onchange=e=>set('aid',e.target.checked)}
-  if(tab==='odm'){q('cAdd').onclick=e=>{const b=e.target.closest('[data-c]');if(!b)return;const n=+b.dataset.c;p.st.coins=Math.max(0,p.st.coins+n);if(n>0)p.st.gift=(p.st.gift||0)+n;save();drawSet()};
+  if(tab==='odm'){q('oReal').onchange=e=>set('realRw',e.target.checked);q('cAdd').onclick=e=>{const b=e.target.closest('[data-c]');if(!b)return;const n=+b.dataset.c;p.st.coins=Math.max(0,p.st.coins+n);if(n>0)p.st.gift=(p.st.gift||0)+n;save();drawSet()};
     $('setIn').querySelectorAll('[data-g]').forEach(b=>b.onclick=()=>{const x=p.st.pend.find(y=>y.id===b.dataset.g);p.st.pend=p.st.pend.filter(y=>y!==x);if(x){x.given=today();p.st.given.unshift(x);p.st.given=p.st.given.slice(0,30)}save();drawSet()});
     const rws=()=>p.set.rewards=(p.set.rewards||DSET.rewards).map(r=>({...r}));
     q('rws').onchange=e=>{const row=e.target.closest('[data-i]');if(!row)return;const r=rws()[+row.dataset.i];const f=e.target.dataset.f;r[f]=f==='c'?Math.max(1,Math.min(99,+e.target.value||1)):e.target.value.trim()||r[f];save()};
