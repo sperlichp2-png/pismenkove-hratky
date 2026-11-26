@@ -1,0 +1,36 @@
+name: Nahrávky hlasem Antonín
+
+on:
+  push:
+    branches: [gh-pages]
+    paths: [texts.json, tools/gen_audio.py, .github/workflows/audio.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: audio
+  cancel-in-progress: false
+
+jobs:
+  nahravky:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install edge-tts
+      - name: Namluvit hlášky
+        run: python tools/gen_audio.py
+      - name: Uložit nahrávky do repozitáře
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add audio
+          if git diff --cached --quiet; then echo "Beze změn"; exit 0; fi
+          git commit -m "Nahrávky hlasem Antonín"
+          git pull --rebase origin gh-pages
+          git push origin HEAD:gh-pages

@@ -241,7 +241,7 @@ const ALPHA=['A','Á','B','C','Č','D','Ď','E','É','Ě','F','G','H','CH','I','
 const LONG={'Á':'A','É':'E','Í':'I','Ó':'O','Ú':'U','Ů':'U','Ý':'Y'};
 const VOW=new Set(['A','Á','E','É','Ě','I','Í','O','Ó','U','Ú','Ů','Y','Ý']);
 const ORDER=['A','M','L','E','S','O','P','U','I','T','J','V','N','D','K','Y','Z','R','B','C','H','CH','Č','Š','Ž','Ř','Ě','F','G','Ď','Ť','Ň','X','W','Q','Á','É','Í','Ó','Ú','Ů','Ý'];
-const NAME={A:'á',Á:'á s čárkou',B:'bé',C:'cé',Č:'čé',D:'dé',Ď:'ďé',E:'é',É:'é s čárkou',Ě:'é s háčkem',F:'ef',G:'gé',H:'há',CH:'chá',I:'í',Í:'í s čárkou',J:'jé',K:'ká',L:'el',M:'em',N:'en',Ň:'eň',O:'ó',Ó:'ó s čárkou',P:'pé',Q:'kvé',R:'er',Ř:'eř',S:'es',Š:'eš',T:'té',Ť:'ťé',U:'ú',Ú:'ú s čárkou',Ů:'ů s kroužkem',V:'vé',W:'dvojité vé',X:'iks',Y:'ypsilon',Ý:'ypsilon s čárkou',Z:'zet',Ž:'žet'};
+const NAME={A:'a',Á:'á s čárkou',B:'bé',C:'cé',Č:'čé',D:'dé',Ď:'ďé',E:'e',É:'é s čárkou',Ě:'é s háčkem',F:'ef',G:'gé',H:'há',CH:'chá',I:'i',Í:'í s čárkou',J:'jé',K:'ká',L:'el',M:'em',N:'en',Ň:'eň',O:'o',Ó:'ó s čárkou',P:'pé',Q:'kvé',R:'er',Ř:'eř',S:'es',Š:'eš',T:'té',Ť:'ťé',U:'u',Ú:'ú s čárkou',Ů:'ů s kroužkem',V:'vé',W:'dvojité vé',X:'iks',Y:'ypsilon',Ý:'ypsilon s čárkou',Z:'zet',Ž:'žet'};
 const NW=['nula','jedna','dvě','tři','čtyři','pět','šest','sedm','osm','devět','deset','jedenáct','dvanáct','třináct','čtrnáct','patnáct','šestnáct','sedmnáct','osmnáct','devatenáct','dvacet'];
 const RAW='LA-MA🦙 PES🐕 LES🌲 O-SEL🫏 MÍ-SA🥣 MÁ-MA👩 MA-PA🗺️ LU-PA🔍 PI-LA🪚 MA-SO🥩 PU-SA👄 SŮL🧂 TÁ-TA👨 AU-TO🚗 SA-LÁT🥗 PA-LE-TA🎨 ME-TLA🧹 '
 +'O-KO👁️ U-CHO👂 NOS👃 RU-KA✋ NO-HA🦵 ZUB🦷 STROM🌳 DŮM🏠 VLAK🚂 KO-LO🚲 LOĎ⛵ MÍČ⚽ KOČ-KA🐈 MYŠ🐭 KRÁ-VA🐄 KO-ZA🐐 OV-CE🐑 KŮŇ🐴 PRA-SE🐖 SLE-PI-CE🐔 KACH-NA🦆 HU-SA🪿 SO-VA🦉 RY-BA🐟 ŽÁ-BA🐸 HAD🐍 LEV🦁 TY-GR🐅 SLON🐘 O-PI-CE🐒 MED-VĚD🐻 LIŠ-KA🦊 ZA-JÍC🐇 JE-ŽEK🦔 VČE-LA🐝 MO-TÝL🦋 PA-VOUK🕷️ ŠNEK🐌 VEL-RY-BA🐋 DEL-FÍN🐬 KRAB🦀 PTÁK🐦 PA-POU-ŠEK🦜 ŽI-RA-FA🦒 ZE-BRA🦓 DRAK🐉 MOU-CHA🪰 VLK🐺 KLO-KAN🦘 TUČ-ŇÁK🐧 KRO-KO-DÝL🐊 ŽE-LVA🐢 VE-VER-KA🐿️ KO-HOUT🐓 BE-RUŠ-KA🐞 JED-NO-RO-ŽEC🦄 VEL-BLOUD🐫 HROCH🦛 NO-SO-RO-ŽEC🦏 PAN-DA🐼 '
@@ -336,17 +336,28 @@ function engine(pref){pref=pref||VP;
   if(pref.startsWith('claude:')&&ctts)return {c:pref.slice(7)};
   if(pref.startsWith('dev:')){const v=csV.find(x=>x.name===pref.slice(4));if(v)return {v}}
   const b=csV[0];if(b&&vScore(b)>=4)return {v:b};if(ctts)return {c:'buttery'};if(b)return {v:b};return {}}
+/* nahrávky hlasem Antonín (audio/index.json: text -> soubor) */
+let AUD=null,FORCE_MS=false,curA=null;
+try{fetch('audio/index.json',{cache:'no-cache'}).then(r=>r.ok?r.json():null).then(j=>{if(j&&typeof j==='object'&&Object.keys(j).length){AUD=j;if($('set')&&$('set').classList.contains('show')&&tab==='hlas')drawSet()}}).catch(()=>{})}catch(e){}
+const audOn=pref=>!!AUD&&(pref?pref==='rec':(VP==='auto'||VP==='rec'));
+const stopClip=()=>{try{if(curA){curA.onended=null;curA.onerror=null;curA.pause()}}catch(e){}curA=null};
+function playClips(files,g,r){try{speechSynthesis.cancel()}catch(e){}try{ctts&&ctts.stop()}catch(e){}stopClip();let i=0;
+  const next=()=>{if(g!==tgen)return;if(i>=files.length){setTimeout(()=>spoke(g),150);return}
+    const a=new Audio('audio/'+files[i++]);curA=a;try{a.preservesPitch=true;a.playbackRate=Math.max(.6,Math.min(1.6,r/.85))}catch(e){}
+    a.onended=next;a.onerror=next;const pr=a.play();if(pr&&pr.catch)pr.catch(()=>{if(curA===a)next()})};next()}
 /* fronta řeči: talk = právě se mluví; whenQuiet počká, až hlas domluví */
 let talk=0,tgen=0,qcb=[],tsafe=0;
 function spoke(g){if(g!==undefined&&g!==tgen)return;talk=0;clearTimeout(tsafe);while(!talk&&qcb.length){const f=qcb.shift();try{f()}catch(e){}}}
 function whenQuiet(fn,d){setTimeout(()=>{if(talk)qcb.push(fn);else fn()},d||0)}
 const guard=fn=>{const k=view+':'+cur+':'+rTok;return()=>{if(view+':'+cur+':'+rTok===k)fn()}};
 const sayQ=(t,d)=>whenQuiet(guard(()=>say(t)),d===undefined?300:d);
-function say(parts,pref,rf){parts=[].concat(parts).filter(Boolean);if(!parts.length)return;const r=S().rate*(rf||1);const e=engine(pref);
-  const g=++tgen;talk=1;clearTimeout(tsafe);tsafe=setTimeout(()=>spoke(g),Math.min(15000,parts.join(' ').length*95/r+700*parts.length+400));
+function say(parts,pref,rf){parts=[].concat(parts).filter(Boolean);if(!parts.length)return;const r=S().rate*(rf||1);
+  const g=++tgen;talk=1;clearTimeout(tsafe);tsafe=setTimeout(()=>spoke(g),Math.min(20000,parts.join(' ').length*110/r+900*parts.length+600));
+  if(audOn(pref)){const f=parts.map(t=>AUD[t]);if(f.every(Boolean))return playClips(f,g,r)}
+  stopClip();if(pref==='rec')pref='auto';const e=engine(pref);
   if(e.c){try{speechSynthesis.cancel()}catch(x){}try{ctts.speak(parts.map(t=>({text:t,voice:e.c})),{language:'cs',rate:Math.max(.7,Math.min(1.5,r+.1))}).then(()=>spoke(g),()=>spoke(g))}catch(x){spoke(g)}return}
   try{speechSynthesis.cancel();try{ctts&&ctts.stop()}catch(x){}parts.forEach((t,i)=>{const u=new SpeechSynthesisUtterance(t);u.lang='cs-CZ';if(e.v)u.voice=e.v;u.rate=r;if(i===parts.length-1){u.onend=()=>setTimeout(()=>spoke(g),250);u.onerror=()=>spoke(g)}speechSynthesis.speak(u)})}catch(x){spoke(g)}}
-const hush=()=>{const hg=++tgen;try{speechSynthesis.cancel()}catch(e){}try{ctts&&ctts.stop()}catch(e){}qcb=qcb.filter(f=>f===showPop);setTimeout(()=>spoke(hg),200)};
+const hush=()=>{const hg=++tgen;stopClip();try{speechSynthesis.cancel()}catch(e){}try{ctts&&ctts.stop()}catch(e){}qcb=qcb.filter(f=>f===showPop);setTimeout(()=>spoke(hg),200)};
 const NAME_MS={Ň:'Ň'};
 const pn=g=>(ST.pron&&ST.pron[g])||(msV()&&NAME_MS[g])||NAME[g]||g.toLowerCase();
 const ln=(g,full)=>{const n=pn(g);return full?'písmenko '+n:n};
@@ -361,7 +372,7 @@ const sp=x=>{const o=wo(x);if(o)return o;const t=x.toLowerCase();if(WSET.has(x)&
 /* výchozí výslovnost slabik ověřená rodičem (hlas Antonín) */
 const SDEF={BE:'Slabika bbe.',BÓN:'Slabika bón, jako bonbón.',HA:'Slabika hha.',HR:'Slabika hrr, jako hrnek.',HU:'Slabika hhu.',KEV:'Slabika kef, jako mrkev.',LÉV:'Slabika léf, jako polévka.',LÓ:'Slabika ló, jako balónek.',MLÉ:'Slabika mlé, jako mléko.',MR:'Slabika mrr, jako mrkev.',O:'Slabika o, jako oko.',PI:'Slabika pí.',RU:'Slabika rru.',SO:'Slabika sso.',SRD:'Slabika srt, jako srdce.',SU:'Slabika ssu.',U:'Slabika u, jako ucho.',VA:'Slabika vva.',ZMR:'Slabika zmrr, jako zmrzlina.',ŽEC:'Slabika žets.'};
 const sylEx=x=>{const w=WORDS.find(w=>w.s[0]===x&&w.s.length>1)||WORDS.find(w=>w.s.includes(x)&&w.s.length>1);return w?w.w.toLowerCase():''};
-const msV=()=>{const e=engine();return !!(e.v&&/microsoft/i.test(e.v.name))};
+const msV=()=>{if(FORCE_MS||audOn())return true;const e=engine();return !!(e.v&&/microsoft/i.test(e.v.name))};
 const spS=x=>(ST.spron&&ST.spron[x])||(msV()&&SDEF[x])||'Slabika '+x.toLowerCase()+'.';
 const nwd=n=>NW[n];
 const numS=n=>(ST.npron&&ST.npron[n])||'Číslo '+NW[n]+'.';
@@ -532,7 +543,7 @@ function gOkenko(){const k=known();const C=k.filter(l=>!VOW.has(l)),V=k.filter(l
     $('qz').innerHTML='<div class="tools">'+hearBtn('qh')+'</div><div class="row" id="qo">'+o.map(x=>'<button class="syl s" data-s="'+x+'">'+disp(x)+'</button>').join('')+'</div>';
     const play=()=>say(spS(t));play();$('qh').onclick=play;let done=false;
     $('qo').onclick=ev=>{const b=ev.target.closest('[data-s]');if(!b||done)return;
-      if(b.dataset.s===t){done=true;b.classList.add('pop');say('Správně, '+low(t));win('okenko');setTimeout(()=>{if(view==='game'&&cur==='okenko')$('quiz').click()},2200)}else{miss('okenko','S:'+t,b);say(spS(b.dataset.s))}}}}
+      if(b.dataset.s===t){done=true;b.classList.add('pop');say(['Správně!',spS(t)]);win('okenko');setTimeout(()=>{if(view==='game'&&cur==='okenko')$('quiz').click()},2200)}else{miss('okenko','S:'+t,b);say(spS(b.dataset.s))}}}}
 
 /* --- 5 slabiky --- */
 function gSlabiky(){const multi=WORDS.filter(w=>w.s.length>1);let cand=multi.filter(w=>w.g.every(eff));
@@ -785,11 +796,11 @@ function drawSet(){const el=$('setIn');const p=P();
     +'<p><b>Zkontrolováno '+ok+' / '+it.length+'</b> · upraveno '+ch+'</p><div class="tools" style="justify-content:flex-start"><button class="btn" id="vAll">▶ Přehrát vše</button><button class="btn" id="vStop">■ Stop</button><label class="chk" style="margin:0"><input type="checkbox" id="vOnly"'+(vOnly?' checked':'')+'> jen nezaškrtnuté</label></div>'
     +'<div class="tools" style="justify-content:flex-start"><button class="btn main" id="vRep">📋 Zkopírovat výsledek pro Claude</button></div><textarea id="vOut" readonly style="display:none;width:100%;min-height:140px;font-size:14px;margin-top:8px;border-radius:10px;border:2px solid var(--line);background:var(--bg);color:var(--ink);padding:8px"></textarea>'
     +'<div id="vt">'+it.filter(x=>!vOnly||!(ST.pok&&ST.pok[x.k])).map(x=>'<div class="rw tr'+(ST.pok&&ST.pok[x.k]?' ok':'')+(x.cur!==x.def?' ch':'')+'" data-k="'+esc(x.k)+'"><span class="lab">'+(x.e?'<span style="font-size:26px">'+x.e+'</span> ':'')+esc(x.lab)+'</span><input type="text" value="'+esc(x.cur)+'" maxlength="40" aria-label="výslovnost '+esc(x.lab)+'"><button class="btn" data-a="p" aria-label="přehrát">▶</button><button class="btn" data-a="v" aria-label="zkusit jinak">🔀</button><button class="btn" data-a="r" aria-label="výchozí">↺</button><button class="btn" data-a="o" aria-label="zkontrolováno">✔</button></div>').join('')+'</div>'}
-  if(tab==='hlas'){const ea=engine('auto');const opts=[['auto','Automaticky (teď: '+(ea.c?'Claude':ea.v?ea.v.name:'žádný')+')']].concat(ctts?CLV.map(([v,l])=>['claude:'+v,l+' (přirozený, přes internet)']):[]).concat(csV.map(v=>['dev:'+v.name,v.name+(vScore(v)>=4?' ★ přirozený':'')]));
+  if(tab==='hlas'){const ea=engine('auto');const opts=[['auto','Automaticky (teď: '+(AUD?'nahrávky Antonín':ea.c?'Claude':ea.v?ea.v.name:'žádný')+')']].concat(AUD?[['rec','★ Nahrávky – Antonín ('+Object.keys(AUD).length+' nahrávek, stejné na každém zařízení)']]:[]).concat(ctts?CLV.map(([v,l])=>['claude:'+v,l+' (přirozený, přes internet)']):[]).concat(csV.map(v=>['dev:'+v.name,v.name+(vScore(v)>=4?' ★ přirozený':'')]));
     h+='<h3>Který hlas používat na tomto zařízení</h3><div id="vl">'+opts.map(([k,l])=>'<div class="vrow"><label class="chk" style="flex:1"><input type="radio" name="vp" value="'+esc(k)+'"'+(VP===k?' checked':'')+'> '+esc(l)+'</label><button class="ib" data-t="'+esc(k)+'" aria-label="Vyzkoušet" style="width:48px;height:48px">'+SPK+'</button></div>').join('')+'</div>'
     +(!csV.length&&!ctts?'<p class="warn">Zařízení nemá žádný český hlas.</p>':'')
     +'<h3>Rychlost řeči</h3><input type="range" id="oRate" min="0.5" max="1.2" step="0.05" value="'+s.rate+'" style="width:100%;max-width:320px">'
-    +'<h3>Kde najít nejlepší český hlas</h3><p class="note">Nejpřirozenější české hlasy zdarma nabízí prohlížeč Microsoft Edge: v seznamu hledejte „Microsoft Vlasta Online (Natural)“ nebo „Antonín Online (Natural)“ (spolehlivě na počítači s Windows). Na Androidu v Chrome nainstalujte v Nastavení → Převod textu na řeč → Google češtinu. Hlas Claude funguje ve webovém prohlížeči, ne v mobilní aplikaci Claude. Automatická volba dá přednost přirozenému hlasu zařízení, pak hlasu Claude.</p>'}
+    +'<h3>Kde najít nejlepší český hlas</h3><p class="note">'+(AUD?'Hra má předem namluvené nahrávky hlasem Antonín – Automaticky je použije všude, kde existují; věty, které nahrávku nemají (třeba jména dětí), čte hlas zařízení. ':'Nahrávky hlasem Antonín se ještě připravují. ')+'Nejpřirozenější české hlasy zdarma nabízí prohlížeč Microsoft Edge: v seznamu hledejte „Microsoft Vlasta Online (Natural)“ nebo „Antonín Online (Natural)“ (spolehlivě na počítači s Windows). Na Androidu v Chrome nainstalujte v Nastavení → Převod textu na řeč → Google češtinu. Hlas Claude funguje ve webovém prohlížeči, ne v mobilní aplikaci Claude. Automatická volba dá přednost přirozenému hlasu zařízení, pak hlasu Claude.</p>'}
   if(tab==='vys'){const st=p.st;const t=today();const L=lvOf(st.stars);
     h+='<h3>Hvězdičky a úroveň</h3><p>Celkem ⭐ '+st.stars+' · dnes ⭐ '+(st.day===t?st.today:0)+' · úroveň '+L+' '+lvAn(L)+' · odznaky '+BADGES.filter(b=>st.badges[b.id]).length+'/'+BADGES.length+' · denní cíl splněn '+st.goals+'× · nejdelší řada bez chyby '+st.best+' · hraní '+st.days.length+' dní</p><p>Zvládnutá písmena: '+(Object.entries(st.hit).filter(([k,v])=>k.startsWith('L:')&&v>=5).map(([k])=>disp(k.slice(2))).join(' ')||'zatím žádná')+'</p><h3>Úspěšnost v hrách</h3>';
     const rows=GAMES.filter(g=>st.g[g.id]).map(g=>{const x=st.g[g.id],n=x.ok+x.bad,pc=n?Math.round(x.ok/n*100):0;return '<div class="stat"><span>'+g.label+'</span><i><span style="width:'+pc+'%"></span></i><em>'+pc+' % ('+n+')</em></div>'});
@@ -846,6 +857,27 @@ function bindSet(){const p=P();const set=(k,v)=>{p.set[k]=v;save();drawSet()};co
     q('oRate').oninput=e=>{p.set.rate=+e.target.value;save()};q('oRate').onchange=()=>say('Takhle rychle budu mluvit.')}
   if(tab==='vys')q('rst').onclick=()=>{p.st={};fixP(p);save();drawSet()}}
 
+/* seznam všech hlášek pro nahrávky (spouští se při sestavení, ne ve hře) */
+window.__allTexts=function(){const T=new Set(),A=x=>{if(x)T.add(x)};const old=FORCE_MS;FORCE_MS=true;const svST=ST;ST={profiles:[],cur:null,ts:0};
+  try{
+  ALPHA.forEach(g=>{A(', '+ln(g,true)+'.');A(', '+ln(g,false)+'.');A(ln(g,true)+' jako');A(ln(g,true));A('Písmenko '+pn(g)+' je tvoje!')});
+  WORDS.forEach(w=>{A(sp(w.w));A(low(w.w));A('To je '+low(w.w));A(low(w.w)+' začíná na písmenko '+pn(w.g[0])+'.')});
+  const syl=new Set(WORDS.flatMap(w=>w.s));const C=ALPHA.filter(l=>!VOW.has(l)),V=ALPHA.filter(l=>VOW.has(l));C.forEach(c=>V.forEach(v=>syl.add(c+v)));
+  syl.forEach(x=>{A(spS(x));A(low(x))});
+  NW.forEach((x,i)=>{A(numS(i));A('Číslo '+numW(i)+' je tvoje!');A(x)});
+  for(let a=0;a<=20;a++)for(let b=0;a+b<=20;b++){A(nwd(a)+' plus '+nwd(b));A(nwd(a)+' plus '+nwd(b)+' je '+nwd(a+b))}
+  for(let a=0;a<=20;a++)for(let b=0;b<=a;b++){A(nwd(a)+' mínus '+nwd(b));A(nwd(a)+' mínus '+nwd(b)+' je '+nwd(a-b))}
+  const W={'<':'je menší než','>':'je větší než','=':'se rovná'};for(let a=0;a<=20;a++)for(let b=0;b<=20;b++){const r=a>b?'>':a<b?'<':'=';A(nwd(a)+' '+W[r]+' '+nwd(b))}
+  for(let N=2;N<=10;N++)for(let a=0;a<=N;a++){A('Rozlož číslo '+nwd(N)+'. '+nwd(a)+' a kolik?');A(nwd(N)+' je '+nwd(a)+' a '+nwd(N-a))}
+  for(let len=2;len<=5;len++)for(let s0=0;s0+len-1<=20;s0++)A(Array.from({length:len},(_,i)=>nwd(s0+i)).join(', '));
+  GAMES.forEach(g=>{A(g.ask);A(g.label)});BADGES.forEach(b=>{A(b.n);A(b.d)});
+  for(let L=2;L<=40;L++)A('Hurá! Jsi na úrovni '+numW(L)+'.');
+  KR.slice(1).forEach(k=>A('Poznej ho ještě '+k+'.'));
+  ['Správně!','Zkus to znovu.','Obě strany mají stejně.','Vlevo je víc.','Vpravo je víc.','Písmenka','Čísla','Moje sbírka','Obchod s odměnami.','Tohle písmenko umíš!','Tohle číslo umíš!','Nový odznak!','Tenhle odznak už máš!','Tenhle odznak ještě nemáš.','Hurá! Máš nový odznak.','Hurá! Dnešní cíl je splněný.','Máš pět hvězdiček a tři mince navíc.','Teď můžeš zkusit výzvu navíc.','Hurá! Výzva je splněná.','Máš dvě mince a můžeš si vybrat samolepku.','Vyber si samolepku.','Tahle je tvoje!','Tuhle samolepku máš!','Tuhle samolepku ještě nemáš.','Získáš ji za výzvu navíc nebo v obchodě za tři mince.','Dobře, šetříme!','Máš dvě mince.','Dnešní cíl i výzva jsou splněné. Jsi skvělý hráč!','Dnešní cíl je splněný!','Máš odměnu od rodičů!','Hurá! Rodiče ti odměnu předají.','Ahoj! Tímhle hlasem teď budu mluvit.','Takhle rychle budu mluvit.','Ahoj! Máma mele maso.','Jedna, dvě, tři.'].forEach(A);
+  for(let n=0;n<=20;n++){A('Dnešní cíl je '+numW(n)+' hvězdiček.');A('Zatím máš '+numW(n)+'.');A('Máš '+numW(n)+' mincí.');A('Máš '+numW(n)+' nových odznaků.');A('Dostáváš '+numW(n)+' mincí navíc.');A('Výzva navíc: splň ještě '+numW(n)+' úkolů a vyber si samolepku.')}
+  VIT.forEach(x=>{A(x.n+'.');A(x.n+'. To je tvoje!');A(x.n+'. Tohle už máš!');A('Hurá! '+x.n+' je tvoje!');A('Šetříš na: '+x.n+'.')});
+  }finally{FORCE_MS=old;ST=svST}
+  return [...T]};
 /* navigace: systémové Zpět (Android), Esc, nouzový návrat */
 function goBack(){
   if($('lvl').classList.contains('show')){if(popClose)popClose();else $('lvl').classList.remove('show');return true}
